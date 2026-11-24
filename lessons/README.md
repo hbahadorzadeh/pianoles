@@ -9,7 +9,7 @@ Each lesson lives in its own folder, such as `037-echo-steps/lesson.yaml`. The a
 3. After `npm ci`, run `npm test` and `npm run build` from the repository root. Errors identify the file and, for note problems, the hand and measure. Use `npm run dev` and open `/pianoles/#/lesson/<id>` to check notation, playback, and practice.
 
 ```yaml
-id: 89
+id: 91
 unit: More practice
 title: Two simple chords
 instruction: Play each chord together and hold it while the bar fills.
@@ -48,3 +48,29 @@ Write notes as pitch plus octave, with middle C written `C4`. The playable range
 An event without a duration lasts one beat. Append `:0.5` for an eighth note, `:1.5` for a dotted quarter, `:2` for a half note, `:3` for a dotted half, or `:4` for a whole note. Use `-` for a rest, such as `-:2` for two beats of silence. The durations must fill every measure exactly. Quote measure strings to keep YAML punctuation unambiguous.
 
 For repertoire, transcribe a public-domain composition or write your own arrangement of it. Use public-domain source editions and leave out modern arrangements, recordings, and other assets you lack permission to share.
+
+## Theory lessons
+
+Use `kind: theory` for a keyboard-free lesson. Keep `id`, `unit`, `title`, and `instruction`, and use `examples` and `questions` instead of playing fields like `parts` and `tempo`. A playing lesson may omit `kind` or set it to `playing`.
+
+```yaml
+kind: theory
+id: 91
+unit: Music theory
+title: The quarter rest
+instruction: A quarter rest is one beat of silence in 4/4.
+examples:
+  - label: Quarter rest
+    explanation: Keep counting for one beat while you stay silent.
+    visual: { type: rest, value: quarter }
+questions:
+  - prompt: How many beats of silence does this rest show in 4/4?
+    visual: { type: rest, value: quarter }
+    choices: [One beat, Two beats, Four beats]
+    answer: One beat
+    explanation: A quarter rest takes the same time as a quarter note.
+```
+
+Every example needs a visual. A question may omit it. Each question needs at least two distinct choices, an answer that matches one choice exactly, and a short explanation shown after a correct answer.
+
+A visual may be a `note` with `pitch`, `clef` (`treble` or `bass`), and `value`; a `rest` with `value`; or a `meter` with `signature`. Values are `sixteenth`, `eighth`, `quarter`, `dotted-quarter`, `half`, `dotted-half`, and `whole`. Meter visuals support `2/2`, `2/4`, `3/4`, `4/4`, and `6/8`.

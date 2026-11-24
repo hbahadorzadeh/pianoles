@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { lessons } from './catalog'
+import { playingLessons as lessons } from './catalog'
 
 test('authored fingerings cover beginner notes without reusing a finger in a chord', () => {
   for (const lesson of lessons.slice(0, 15)) {

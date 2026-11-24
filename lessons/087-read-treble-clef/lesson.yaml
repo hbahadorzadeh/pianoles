@@ -1,24 +1,100 @@
+kind: theory
 id: 87
-unit: Reading the staff
+unit: Music theory
 title: Read the treble clef
-instruction: |-
-  Find G4 on the second line from the bottom, where the treble clef curls. Middle C (C4) sits on a short ledger line below the staff.
+instruction: 'The staff has five lines and four spaces. The centre of the note head tells you its pitch. Start
+  from the bottom and move from a line to the next space to go one letter higher.
 
-  Read from bottom to top. The lines are E4, G4, B4, D5, and F5. The spaces spell FACE: F4, A4, C5, and E5.
 
-  First play the landmarks, then try the line and space patterns. In the final four measures, name each note before you play it. Try that last section with Key hints off.
-tempo: 58
-meter: 4
-key: C
-parts:
-  right:
-    - 'C4:2 G4:2'
-    - 'E4 G4 B4 D5'
-    - 'F5 D5 B4 G4'
-    - 'F4 A4 C5 E5'
-    - 'E5 C5 A4 F4'
-    - 'C4 D4 E4 G4'
-    - 'B4 F4 A4 E4'
-    - 'C5 G4 E5 A4'
-    - 'D5 B4 F5 C5'
-    - 'G4 E4 C4:2'
+  The treble clef locates G on the second line. From bottom to top, the lines are E, G, B, D, F and the spaces
+  are F, A, C, E.'
+examples:
+  - label: G on the second line
+    explanation: The curl of the treble clef wraps around the G line.
+    visual:
+      type: note
+      pitch: G4
+      clef: treble
+      value: quarter
+  - label: F in the first space
+    explanation: Move one step down from G to find F between the bottom two lines.
+    visual:
+      type: note
+      pitch: F4
+      clef: treble
+      value: quarter
+  - label: B on the middle line
+    explanation: B sits on the third line. Move one step up to the third space to get C.
+    visual:
+      type: note
+      pitch: B4
+      clef: treble
+      value: quarter
+  - label: Middle C
+    explanation: A short ledger line extends the staff. Middle C sits on the ledger line below the treble staff.
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: quarter
+questions:
+  - prompt: Which note is shown?
+    visual:
+      type: note
+      pitch: G4
+      clef: treble
+      value: quarter
+    choices:
+      - E
+      - G
+      - B
+    answer: G
+    explanation: The second line is G.
+  - prompt: Which note is in this space?
+    visual:
+      type: note
+      pitch: A4
+      clef: treble
+      value: quarter
+    choices:
+      - F
+      - A
+      - C
+    answer: A
+    explanation: The second space is A. The spaces spell FACE from bottom to top.
+  - prompt: Which note is shown?
+    visual:
+      type: note
+      pitch: D5
+      clef: treble
+      value: quarter
+    choices:
+      - G
+      - B
+      - D
+    answer: D
+    explanation: D is on the fourth line.
+  - prompt: What is the note on the bottom line?
+    visual:
+      type: note
+      pitch: E4
+      clef: treble
+      value: quarter
+    choices:
+      - E
+      - F
+      - C
+    answer: E
+    explanation: The treble lines start at E.
+  - prompt: What is shown below the staff?
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: quarter
+    choices:
+      - Low G
+      - Middle C
+      - High C
+    answer: Middle C
+    explanation: The first ledger line below the treble staff is middle C.

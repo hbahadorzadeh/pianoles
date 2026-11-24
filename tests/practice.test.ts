@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { lessons } from './catalog'
+import { lessons, playingLessons } from './catalog'
 import { matchTiming, matchesChord, practiceSteps, releasedEarly, scoreAttempt } from '../src/practice'
 
 test('curriculum contains the expanded course in order and within the playable keyboard', () => {
-  assert.ok(lessons.length >= 88)
+  assert.ok(lessons.length >= 90)
   assert.deepEqual(lessons.map(lesson => lesson.id), Array.from({ length: lessons.length }, (_, i) => i + 1))
-  for (const lesson of lessons) {
+  for (const lesson of playingLessons) {
     for (const hand of lesson.hands) {
       const events = lesson.events.filter(event => event.hand === hand)
       let beat = 0
@@ -19,22 +19,22 @@ test('curriculum contains the expanded course in order and within the playable k
       assert.equal(beat, lesson.meter * lesson.measures)
     }
   }
-  assert.equal(lessons[23].title, 'Evening Duet')
-  assert.ok(lessons.slice(24, 36).every(lesson => lesson.credit))
-  assert.equal(lessons[35].title, 'Prelude in C · opening study')
-  assert.deepEqual(lessons[23].hands, ['right', 'left'])
-  assert.equal(lessons[23].measures, 12)
+  assert.equal(playingLessons[23].title, 'Evening Duet')
+  assert.ok(playingLessons.slice(24, 36).every(lesson => lesson.credit))
+  assert.equal(playingLessons[35].title, 'Prelude in C · opening study')
+  assert.deepEqual(playingLessons[23].hands, ['right', 'left'])
+  assert.equal(playingLessons[23].measures, 12)
 })
 
 test('guided steps merge hands, skip rests and preserve repeated notes', () => {
-  const first = practiceSteps(lessons[0], 'right', 1, 2)
+  const first = practiceSteps(playingLessons[0], 'right', 1, 2)
   assert.deepEqual(first.map(step => step.beat), [0, 2, 4, 5, 6])
-  assert.deepEqual(practiceSteps(lessons[5], 'right', 1, 1).map(step => step.beat), [0, 2])
-  const both = practiceSteps(lessons[14], 'both', 1, 1)
+  assert.deepEqual(practiceSteps(playingLessons[5], 'right', 1, 1).map(step => step.beat), [0, 2])
+  const both = practiceSteps(playingLessons[14], 'both', 1, 1)
   assert.ok(matchesChord(both[0].pitches, new Set([48, 60, 64])))
   assert.ok(!matchesChord(both[0].pitches, new Set([48, 60])))
   assert.ok(!matchesChord(both[0].pitches, new Set([48, 60, 64, 65])))
-  const isolated = practiceSteps(lessons[12], 'left', 2, 2)
+  const isolated = practiceSteps(playingLessons[12], 'left', 2, 2)
   assert.deepEqual(isolated.map(step => step.beat), [0, 1, 2])
 })
 

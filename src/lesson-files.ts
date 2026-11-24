@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
 import { parse } from 'yaml'
-import { keySignatures, pianoRange, type Event, type Finger, type Hand, type Lesson, type LessonUnit, type Note, type PedalCue } from './lessons'
+import { keySignatures, pianoRange, theoryMeters, theoryValues, type CatalogLesson, type Event, type Finger, type Hand, type Lesson, type LessonUnit, type Note, type PedalCue, type TheoryVisual } from './lessons'
 
 const semitones: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }
 const durations = [0.5, 1, 1.5, 2, 3, 4]
@@ -86,8 +86,8 @@ function readPedal(value: unknown, measures: number, meter: number): PedalCue[] 
   return cues
 }
 
-export function parseLesson(contents: string): Lesson & { unit: string } {
-  const raw = mapping(parse(contents, { maxAliasCount: 0 }), ['id', 'unit', 'title', 'instruction', 'tempo', 'meter', 'key', 'credit', 'parts', 'pedal'], 'lesson')
+function parsePlayingLesson(value: unknown): Lesson & { kind: 'playing'; unit: string } {
+  const raw = mapping(value, ['kind', 'id', 'unit', 'title', 'instruction', 'tempo', 'meter', 'key', 'credit', 'parts', 'pedal'], 'lesson')
   const id = readInteger(raw.id, 'id', 1, Number.MAX_SAFE_INTEGER)
   const unit = readText(raw.unit, 'unit')
   const title = readText(raw.title, 'title')
@@ -104,10 +104,75 @@ export function parseLesson(contents: string): Lesson & { unit: string } {
   const measures = parsed[0].measures
   if (parsed.some(part => part.measures !== measures)) throw new Error('Both parts must have the same number of measures')
   return {
-    id, unit, title, instruction, tempo, meter, key, measures, hands,
+    kind: 'playing', id, unit, title, instruction, tempo, meter, key, measures, hands,
     ...(credit ? { credit } : {}),
     events: parsed.flatMap(part => part.events),
     pedal: readPedal(raw.pedal, measures, meter),
+  }
+}
+
+function choice<T extends string>(value: unknown, values: readonly T[], name: string): T {
+  if (typeof value !== 'string' || !values.includes(value as T)) {
+    throw new Error(`${name} must be one of: ${values.join(', ')}`)
+  }
+  return value as T
+}
+
+function list(value: unknown, min: number, name: string): unknown[] {
+  if (!Array.isArray(value) || value.length < min) throw new Error(`${name} must list at least ${min} items`)
+  return value
+}
+
+function readTheoryVisual(value: unknown): TheoryVisual {
+  const raw = mapping(value, ['type', 'pitch', 'clef', 'value', 'signature'], 'visual')
+  const type = choice(raw.type, ['note', 'rest', 'meter'] as const, 'visual.type')
+  if (type === 'note') {
+    mapping(raw, ['type', 'pitch', 'clef', 'value'], 'note visual')
+    const note = readNote(readText(raw.pitch, 'visual.pitch'))
+    if (note.finger !== undefined) throw new Error('visual.pitch must be a pitch without fingering')
+    return {
+      type, pitch: note.spelling, midi: note.midi,
+      clef: choice(raw.clef, ['treble', 'bass'] as const, 'visual.clef'),
+      value: choice(raw.value, theoryValues, 'visual.value'),
+    }
+  }
+  if (type === 'rest') {
+    mapping(raw, ['type', 'value'], 'rest visual')
+    return { type, value: choice(raw.value, theoryValues, 'visual.value') }
+  }
+  mapping(raw, ['type', 'signature'], 'meter visual')
+  return { type, signature: choice(raw.signature, theoryMeters, 'visual.signature') }
+}
+
+export function parseLesson(contents: string): CatalogLesson & { unit: string } {
+  const value: unknown = parse(contents, { maxAliasCount: 0 })
+  const kind = (value as { kind?: unknown } | null)?.kind
+  if (kind === undefined || kind === 'playing') return parsePlayingLesson(value)
+  if (kind !== 'theory') throw new Error('kind must be playing or theory')
+
+  const raw = mapping(value, ['kind', 'id', 'unit', 'title', 'instruction', 'examples', 'questions'], 'theory lesson')
+  return {
+    kind,
+    id: readInteger(raw.id, 'id', 1, Number.MAX_SAFE_INTEGER),
+    unit: readText(raw.unit, 'unit'),
+    title: readText(raw.title, 'title'),
+    instruction: readText(raw.instruction, 'instruction'),
+    examples: list(raw.examples, 1, 'examples').map(example => {
+      const { label, explanation, visual } = mapping(example, ['label', 'explanation', 'visual'], 'example')
+      return { label: readText(label, 'example.label'), explanation: readText(explanation, 'example.explanation'), visual: readTheoryVisual(visual) }
+    }),
+    questions: list(raw.questions, 1, 'questions').map(question => {
+      const { prompt, visual, choices, answer, explanation } = mapping(question, ['prompt', 'visual', 'choices', 'answer', 'explanation'], 'question')
+      const options = list(choices, 2, 'question.choices').map(option => readText(option, 'choice'))
+      if (new Set(options).size !== options.length) throw new Error('question.choices must be distinct')
+      const correct = readText(answer, 'question.answer')
+      if (!options.includes(correct)) throw new Error('question.answer must match one choice')
+      return {
+        prompt: readText(prompt, 'question.prompt'), choices: options, answer: correct,
+        explanation: readText(explanation, 'question.explanation'),
+        ...(visual === undefined ? {} : { visual: readTheoryVisual(visual) }),
+      }
+    }),
   }
 }
 
@@ -117,7 +182,7 @@ export function lessonFiles(folder: string): string[] {
     .map(entry => join(folder, entry.name, 'lesson.yaml'))
 }
 
-export function loadCatalog(files: string[]): { units: LessonUnit[]; lessons: Lesson[] } {
+export function loadCatalog(files: string[]): { units: LessonUnit[]; lessons: CatalogLesson[] } {
   if (!files.length) throw new Error('No lesson files found')
   const entries = files.map(file => {
     try {
@@ -132,7 +197,7 @@ export function loadCatalog(files: string[]): { units: LessonUnit[]; lessons: Le
   }).sort((a, b) => a.lesson.id - b.lesson.id)
 
   const units: LessonUnit[] = []
-  const lessons: Lesson[] = []
+  const lessons: CatalogLesson[] = []
   for (const { file, lesson: { unit, ...lesson } } of entries) {
     if (lesson.id !== lessons.length + 1) throw new Error(`${file}: expected lesson id ${lessons.length + 1}; found ${lesson.id}`)
     let group = units.at(-1)

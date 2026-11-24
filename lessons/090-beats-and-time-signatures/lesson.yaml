@@ -1,0 +1,87 @@
+kind: theory
+id: 90
+unit: Music theory
+title: Beats and time signatures
+instruction: 'A time signature groups time into measures. The top number counts the written note units in each
+  measure. The bottom number tells you which note unit to count. A 4 means quarter notes, an 8 means eighth
+  notes, and a 2 means half notes.
+
+
+  In 4/4, count four quarter-note beats. In 6/8, count six eighth-note subdivisions grouped into two big beats:
+  ONE-two-three FOUR-five-six. Hear the accents in each example.'
+examples:
+  - label: 2/4 · two quarter-note beats
+    explanation: Count ONE-two. The bar contains two quarter-note beats.
+    visual:
+      type: meter
+      signature: 2/4
+  - label: 3/4 · three quarter-note beats
+    explanation: Count ONE-two-three. That is the characteristic pulse of a waltz.
+    visual:
+      type: meter
+      signature: 3/4
+  - label: 4/4 · four quarter-note beats
+    explanation: Count ONE-two-three-four. Start counting again at the next bar line.
+    visual:
+      type: meter
+      signature: 4/4
+  - label: 6/8 · two groups of three
+    explanation: Count six eighth notes, with emphasis on the first and fourth. Each big beat is a dotted quarter
+      note.
+    visual:
+      type: meter
+      signature: 6/8
+  - label: 2/2 · two half-note beats
+    explanation: This is also called cut time. Count two half-note beats per measure. It holds the same total
+      written duration as 4/4.
+    visual:
+      type: meter
+      signature: 2/2
+questions:
+  - prompt: What does the top 4 tell you in 4/4?
+    visual:
+      type: meter
+      signature: 4/4
+    choices:
+      - Four quarter-note units per measure
+      - Play four times louder
+      - Use four notes of any length
+    answer: Four quarter-note units per measure
+    explanation: The top number counts the units in each measure.
+  - prompt: What does the bottom 4 mean?
+    visual:
+      type: meter
+      signature: 3/4
+    choices:
+      - Half-note units
+      - Quarter-note units
+      - Eighth-note units
+    answer: Quarter-note units
+    explanation: A 4 names the quarter note.
+  - prompt: Which signature gives the ONE-two-three pulse of a waltz?
+    choices:
+      - 2/4
+      - 3/4
+      - 4/4
+    answer: 3/4
+    explanation: A waltz groups three quarter-note beats.
+  - prompt: How are the eighth notes usually grouped here?
+    visual:
+      type: meter
+      signature: 6/8
+    choices:
+      - Three groups of two
+      - Two groups of three
+      - Six groups of one
+    answer: Two groups of three
+    explanation: 6/8 has two main pulses, each made of three eighth notes.
+  - prompt: What does the bottom 2 tell you?
+    visual:
+      type: meter
+      signature: 2/2
+    choices:
+      - Count half notes
+      - Count quarter notes
+      - Count eighth notes
+    answer: Count half notes
+    explanation: In 2/2, the bar has two half-note beats.

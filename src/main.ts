@@ -3,18 +3,20 @@ import { PianoAudio } from './audio'
 import { lessons, units } from 'virtual:lesson-catalog'
 import { pianoRange, type Event, type Hands, type Lesson } from './lessons'
 import { renderScore } from './notation'
+import { renderTheory } from './theory'
 import { matchTiming, matchesChord, practiceSteps, releasedEarly, scoreAttempt, timingFeedbackWindow, timingTolerance, type Hit, type Step } from './practice'
-import { loadProgress, readKidsMode, saveKidsMode, saveProgress } from './progress'
+import { createProfile, emptyProgress, loadProfiles, saveProfile, type Profile } from './progress'
 import { RhythmDisplay } from './rhythm'
 import { pedalAt, playbackBeats } from './pedal'
 import { handDiagram, hasFingerings } from './fingering'
 
 const app = document.querySelector<HTMLDivElement>('#app')!
-let kidsMode = readKidsMode()
-const adultProgress = loadProgress(false)
-const kidsProgress = loadProgress(true)
-let progress = kidsMode ? kidsProgress : adultProgress
+const profiles = loadProfiles()
+let currentProfile = profiles.profiles.find(profile => profile.id === profiles.activeId)
+let kidsMode = currentProfile?.kidsMode ?? false
+let progress = currentProfile?.progress ?? emptyProgress()
 let rhythm: RhythmDisplay | undefined
+let cleanUpTheory: (() => void) | undefined
 let fingerEvents: Event[] = []
 const audio = new PianoAudio()
 const held = new Map<string, number>()
@@ -69,6 +71,88 @@ function element<T extends HTMLElement = HTMLElement>(id: string): T {
   return document.getElementById(id) as T
 }
 
+function persistProgress(): void {
+  if (currentProfile) saveProfile(profiles, currentProfile)
+}
+
+function useProfile(profile: Profile, resume: boolean): void {
+  currentProfile = profile
+  progress = profile.progress
+  kidsMode = profile.kidsMode
+  saveProfile(profiles, profile, true)
+  if (resume) history.replaceState(null, '', `#/lesson/${progress.last}`)
+  display()
+}
+
+function connectProfileForm(form: HTMLFormElement, resume: boolean): void {
+  const input = form.querySelector('input')!
+  form.onsubmit = event => {
+    event.preventDefault()
+    const name = input.value.trim()
+    const message = form.querySelector('[role="status"]')!
+    if (!name) {
+      message.textContent = 'Enter a name to continue.'
+      return
+    }
+    if (profiles.profiles.some(profile => profile.name.localeCompare(name, undefined, { sensitivity: 'accent' }) === 0)) {
+      message.textContent = 'A profile with that name already exists.'
+      return
+    }
+    useProfile(createProfile(name), resume)
+  }
+}
+
+function showFirstProfile(): void {
+  app.className = 'first-profile'
+  app.innerHTML = `
+    <main class="profile-welcome">
+      <h1>Who’s learning piano?</h1>
+      <p>Create a profile to save your progress on this browser.</p>
+      <form id="first-profile-form" class="profile-form">
+        <label for="first-profile-name">Your name</label>
+        <input id="first-profile-name" maxlength="40" required autocomplete="given-name">
+        <button class="primary" type="submit">Start learning</button>
+        <p role="status"></p>
+      </form>
+    </main>`
+  connectProfileForm(element<HTMLFormElement>('first-profile-form'), false)
+  element('first-profile-name').focus()
+}
+
+function connectProfilesPanel(): void {
+  const toggle = element('profiles-toggle')
+  const panel = element('profiles-panel')
+  const form = element<HTMLFormElement>('add-profile-form')
+  connectProfileForm(form, true)
+  toggle.onclick = () => {
+    panel.hidden = !panel.hidden
+    toggle.setAttribute('aria-expanded', String(!panel.hidden))
+    if (panel.hidden) return
+    const list = element('profiles-list')
+    list.replaceChildren()
+    for (const profile of profiles.profiles) {
+      const option = document.createElement('button')
+      const selected = profile.id === currentProfile?.id
+      option.type = 'button'
+      option.textContent = profile.name
+      if (selected) option.setAttribute('aria-current', 'true')
+      option.onclick = () => {
+        if (!selected) useProfile(profile, true)
+        else {
+          panel.hidden = true
+          toggle.setAttribute('aria-expanded', 'false')
+          toggle.focus()
+        }
+      }
+      list.append(option)
+    }
+  }
+  element('show-add-profile').onclick = () => {
+    form.hidden = false
+    form.querySelector('input')!.focus()
+  }
+}
+
 function status(message: string): void {
   const feedback = element('feedback')
   if (feedback.textContent !== message) feedback.textContent = message
@@ -81,8 +165,11 @@ function updateSidebar(): void {
     const id = Number(link.dataset.lesson)
     link.querySelector('.check')!.textContent = progress.completed[id] ? '✓' : ''
   })
-  const best = progress.best[lesson.id]
-  element('best').textContent = best ? `Best full attempt · ${best.pitch}% pitch · ${best.timing}% timing` : ''
+  const bestScore = element('best')
+  if (bestScore) {
+    const best = progress.best[lesson.id]
+    bestScore.textContent = best ? `Best full attempt · ${best.pitch}% pitch · ${best.timing}% timing` : ''
+  }
 }
 
 function stop(keepRhythm = false): void {
@@ -203,7 +290,7 @@ function trackNoteHold(hands: Hands, beat: number, pitch: number, beatMs: number
 }
 
 function press(source: string, pitch: number, velocity = 0.72): void {
-  if (held.has(source)) return
+  if (app.classList.contains('theory-mode') || held.has(source)) return
   held.set(source, pitch)
   if (!pressed.has(pitch)) pressedAt.set(pitch, performance.now())
   pressed.add(pitch)
@@ -273,7 +360,7 @@ function checkGuided(): void {
   }
   if (full) {
     progress.completed[lesson.id] = true
-    saveProgress(progress, kidsMode)
+    persistProgress()
     updateSidebar()
   }
   stop(true)
@@ -466,7 +553,7 @@ async function start(mode: 'guided' | 'timed' | 'demo' | 'follow', allowFollow =
         if (scores && full) {
           const best = progress.best[lesson.id]
           if (!best || scores.pitch + scores.timing > best.pitch + best.timing) progress.best[lesson.id] = scores
-          saveProgress(progress, kidsMode)
+          persistProgress()
           updateSidebar()
         }
         stop()
@@ -519,7 +606,7 @@ function renderFingering(events: Event[]): void {
 
 function positionHands(): void {
   const panel = element('fingering')
-  if (panel.hidden) return
+  if (!panel || panel.hidden) return
   const viewport = panel.getBoundingClientRect()
   const hands = [...panel.querySelectorAll<HTMLElement>('.finger-hand:not([hidden])')]
   const placements = hands.map(hand => {
@@ -756,67 +843,10 @@ function setMidiPanel(open: boolean): void {
   element('midi').setAttribute('aria-expanded', String(open))
 }
 
-function display(): void {
-  stop()
-  rhythm = undefined
-  const match = /^#\/lesson\/([1-9]\d*)$/.exec(location.hash)
-  const home = location.hash === '' || location.hash === '#/'
-  const id = home ? Number(progress.last) || 1 : match ? Number(match[1]) : 0
-  const chosen = lessons.find(entry => entry.id === id)
-  lesson = chosen ?? lessons[0]
-  if (home || chosen) {
-    progress.last = lesson.id
-    saveProgress(progress, kidsMode)
-  }
-  highlighted = -1
-  const unit = units.find(unit => unit.lessons.includes(lesson))!
-  const links = units.map(({ title, lessons: entries }) => `
-    <section class="lesson-group">
-      <h2>${escapeText(title)}</h2>
-      ${entries.map(entry => `
-        <a class="lesson-link" data-lesson="${entry.id}" href="#/lesson/${entry.id}" ${entry.id === lesson.id ? 'aria-current="page"' : ''}>
-          <span class="lesson-number">${String(entry.id).padStart(2, '0')}</span><span>${escapeText(entry.title)}</span><span class="check" aria-hidden="true"></span>
-        </a>`).join('')}
-    </section>`).join('')
+function playingMarkup(lesson: Lesson): string {
   const bpm = kidsMode ? 48 : lesson.tempo
   const barOptions = Array.from({ length: lesson.measures }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')
-  app.classList.toggle('kids-mode', kidsMode)
-  app.innerHTML = `
-    <header class="site-header">
-      <a class="brand" href="#/" aria-label="Pianoles home"><span class="brand-mark" aria-hidden="true">♩</span>pianoles<span class="brand-dot">.</span></a>
-      <div class="header-actions">
-        <button type="button" id="kids-toggle" aria-pressed="${kidsMode}" aria-label="Kids mode">${kidsMode ? 'Exit kids mode' : 'Kids mode'}</button>
-        <button type="button" id="catalog" aria-controls="sidebar" aria-expanded="false">Lessons</button>
-        <button type="button" id="midi" aria-controls="midi-panel" aria-expanded="false">Connect MIDI</button>
-        <section id="midi-panel" aria-labelledby="midi-heading" hidden>
-          <div class="midi-panel-head"><h2 id="midi-heading">MIDI devices</h2><button type="button" id="midi-done">Done</button></div>
-          <p id="midi-status" role="status"></p>
-          <div id="midi-input-row" class="midi-input-row" hidden><label for="midi-devices">MIDI input</label><select id="midi-devices"></select></div>
-          <p id="midi-last-note"></p>
-          <button type="button" id="midi-scan">Check again</button>
-        </section>
-      </div>
-    </header>
-    <div class="layout">
-      <aside id="sidebar" aria-label="Lesson catalog">
-        <div class="catalog-head">
-          <div class="catalog-title"><h2>Lessons</h2><span id="completion"></span></div>
-          <progress id="course-progress" aria-label="Course completion" max="${lessons.length}"></progress>
-          <form id="jump"><label for="lesson-number">Jump to lesson</label><input id="lesson-number" type="number" min="1" max="${lessons.length}" required placeholder="${lesson.id}" /><button type="submit">Go</button></form>
-        </div>
-        <nav id="lesson-list" aria-label="Lessons">${links}</nav>
-      </aside>
-      <main>
-        ${!home && !chosen ? '<div class="route-alert" role="status">That lesson could not be found. <a href="#/lesson/1">Open the course catalog</a>.</div>' : ''}
-        <section class="intro" aria-labelledby="lesson-title">
-          <div class="intro-meta"><span>${escapeText(unit.title)}</span><span class="meta-dot"></span><span>Lesson ${lesson.id} of ${lessons.length}</span></div>
-          <div class="title-row"><h1 id="lesson-title">${escapeText(lesson.title)}</h1><nav class="step-nav" aria-label="Neighboring lessons">
-            ${lesson.id > 1 ? `<a href="#/lesson/${lesson.id - 1}" aria-label="Previous lesson">←</a>` : '<span aria-hidden="true">←</span>'}
-            ${lesson.id < lessons.length ? `<a href="#/lesson/${lesson.id + 1}" aria-label="Next lesson">→</a>` : '<span aria-hidden="true">→</span>'}
-          </nav></div>
-          ${lesson.credit ? `<p class="lesson-credit">${escapeText(lesson.credit)}</p>` : ''}
-          <p class="lesson-instruction">${escapeText(lesson.instruction)}</p>
-        </section>
+  return `
         <section class="studio" aria-label="Practice studio">
           <div class="studio-toolbar">
             <div class="play-controls">
@@ -852,17 +882,95 @@ function display(): void {
           </div>
           <div class="keyboard-foot" id="best"></div>
         </section>
+  `
+}
+
+function display(): void {
+  cleanUpTheory?.()
+  cleanUpTheory = undefined
+  stop()
+  rhythm = undefined
+  if (!currentProfile) {
+    showFirstProfile()
+    return
+  }
+  app.classList.remove('first-profile')
+  const match = /^#\/lesson\/([1-9]\d*)$/.exec(location.hash)
+  const home = location.hash === '' || location.hash === '#/'
+  const id = home ? Number(progress.last) || 1 : match ? Number(match[1]) : 0
+  const chosen = lessons.find(entry => entry.id === id)
+  const selected = chosen ?? lessons[0]
+  if (selected.kind === 'playing') lesson = selected
+  if (home || chosen) {
+    progress.last = selected.id
+    persistProgress()
+  }
+  highlighted = -1
+  const unit = units.find(unit => unit.lessons.includes(selected))!
+  const links = units.map(({ title, lessons: entries }) => `
+    <section class="lesson-group">
+      <h2>${escapeText(title)}</h2>
+      ${entries.map(entry => `
+        <a class="lesson-link" data-lesson="${entry.id}" href="#/lesson/${entry.id}" ${entry.id === selected.id ? 'aria-current="page"' : ''}>
+          <span class="lesson-number">${String(entry.id).padStart(2, '0')}</span><span>${escapeText(entry.title)}</span><span class="check" aria-hidden="true"></span>
+        </a>`).join('')}
+    </section>`).join('')
+  const firstTheory = lessons.find(entry => entry.kind === 'theory')
+  app.classList.toggle('kids-mode', kidsMode)
+  app.classList.toggle('theory-mode', selected.kind === 'theory')
+  app.innerHTML = `
+    <header class="site-header">
+      <a class="brand" href="#/" aria-label="Pianoles home"><span class="brand-mark" aria-hidden="true">♩</span>pianoles<span class="brand-dot">.</span></a>
+      <div class="header-actions">
+        <button type="button" id="profiles-toggle" aria-label="Profiles" aria-controls="profiles-panel" aria-expanded="false"><span class="profile-trigger-text">Profiles</span><span class="profile-trigger-name">${escapeText(currentProfile.name)}</span></button>
+        <section id="profiles-panel" aria-labelledby="profiles-heading" hidden>
+          <h2 id="profiles-heading">Profiles</h2>
+          <div id="profiles-list"></div>
+          <button type="button" id="show-add-profile">Add profile</button>
+          <form id="add-profile-form" class="profile-form" hidden>
+            <label for="new-profile-name">Name</label>
+            <input id="new-profile-name" maxlength="40" required autocomplete="off">
+            <button class="primary" type="submit">Create profile</button>
+            <p role="status"></p>
+          </form>
+        </section>
+        <button type="button" id="kids-toggle" aria-pressed="${kidsMode}" aria-label="Kids mode">${kidsMode ? 'Exit kids mode' : 'Kids mode'}</button>
+        <button type="button" id="catalog" aria-controls="sidebar" aria-expanded="false">Lessons</button>
+        <button type="button" id="midi" aria-controls="midi-panel" aria-expanded="false">Connect MIDI</button>
+        <section id="midi-panel" aria-labelledby="midi-heading" hidden>
+          <div class="midi-panel-head"><h2 id="midi-heading">MIDI devices</h2><button type="button" id="midi-done">Done</button></div>
+          <p id="midi-status" role="status"></p>
+          <div id="midi-input-row" class="midi-input-row" hidden><label for="midi-devices">MIDI input</label><select id="midi-devices"></select></div>
+          <p id="midi-last-note"></p>
+          <button type="button" id="midi-scan">Check again</button>
+        </section>
+      </div>
+    </header>
+    <div class="layout">
+      <aside id="sidebar" aria-label="Lesson catalog">
+        <div class="catalog-head">
+          <div class="catalog-title"><h2>Lessons</h2><span id="completion"></span></div>
+          <progress id="course-progress" aria-label="Course completion" max="${lessons.length}"></progress>
+          ${firstTheory ? `<a class="theory-catalog-link" href="#/lesson/${firstTheory.id}">Music theory</a>` : ''}
+          <form id="jump"><label for="lesson-number">Jump to lesson</label><input id="lesson-number" type="number" min="1" max="${lessons.length}" required placeholder="${selected.id}" /><button type="submit">Go</button></form>
+        </div>
+        <nav id="lesson-list" aria-label="Lessons">${links}</nav>
+      </aside>
+      <main>
+        ${!home && !chosen ? '<div class="route-alert" role="status">That lesson could not be found. <a href="#/lesson/1">Open the course catalog</a>.</div>' : ''}
+        <section class="intro" aria-labelledby="lesson-title">
+          <div class="intro-meta"><span>${escapeText(unit.title)}</span><span class="meta-dot"></span><span>Lesson ${selected.id} of ${lessons.length}</span></div>
+          <div class="title-row"><h1 id="lesson-title">${escapeText(selected.title)}</h1><nav class="step-nav" aria-label="Neighboring lessons">
+            ${selected.id > 1 ? `<a href="#/lesson/${selected.id - 1}" aria-label="Previous lesson">←</a>` : '<span aria-hidden="true">←</span>'}
+            ${selected.id < lessons.length ? `<a href="#/lesson/${selected.id + 1}" aria-label="Next lesson">→</a>` : '<span aria-hidden="true">→</span>'}
+          </nav></div>
+          ${selected.kind === 'playing' && selected.credit ? `<p class="lesson-credit">${escapeText(selected.credit)}</p>` : ''}
+          <p class="lesson-instruction">${escapeText(selected.instruction)}</p>
+        </section>
+        ${selected.kind === 'playing' ? playingMarkup(selected) : '<div id="theory-content"></div>'}
       </main>
     </div>`
 
-  element<HTMLSelectElement>('last').value = String(lesson.measures)
-  keyboardOctave = 3
-  renderScore(element('score'), lesson)
-  makeKeyboard()
-  renderPedal()
-  rhythm = new RhythmDisplay(element('rhythm'), lesson, renderFingering)
-  rhythm.preview(settings().hands, 0)
-  refreshKeys()
   updateSidebar()
   renderMidiStatus()
   refreshMidi()
@@ -870,12 +978,12 @@ function display(): void {
   if (current && (current.offsetTop < element('lesson-list').scrollTop || current.offsetTop + current.offsetHeight > element('lesson-list').clientHeight)) {
     element('lesson-list').scrollTop = current.offsetTop - 48
   }
+  connectProfilesPanel()
   element('kids-toggle').onclick = () => {
-    stop()
+    if (!currentProfile) return
     kidsMode = !kidsMode
-    saveKidsMode(kidsMode)
-    progress = kidsMode ? kidsProgress : adultProgress
-    history.replaceState(null, '', `#/lesson/${progress.last}`)
+    currentProfile.kidsMode = kidsMode
+    persistProgress()
     display()
     element('kids-toggle').focus()
   }
@@ -890,8 +998,6 @@ function display(): void {
     element('sidebar').classList.remove('open')
     element('catalog').setAttribute('aria-expanded', 'false')
   }
-  for (const mode of ['guided', 'timed', 'demo'] as const) element(mode).onclick = () => void start(mode)
-  element('stop').onclick = () => { stop(); refreshKeys(); status('Practice stopped.') }
   element('midi').onclick = () => {
     const open = element('midi-panel').hidden
     setMidiPanel(open)
@@ -905,6 +1011,28 @@ function display(): void {
   element<HTMLSelectElement>('midi-devices').onchange = event => {
     void selectMidi(midiAccess?.inputs.get((event.target as HTMLSelectElement).value))
   }
+  if (selected.kind === 'theory') {
+    keys.clear()
+    shortcuts.clear()
+    cleanUpTheory = renderTheory(element('theory-content'), selected, audio, () => {
+      progress.completed[selected.id] = true
+      persistProgress()
+      updateSidebar()
+    })
+    return
+  }
+
+  element<HTMLSelectElement>('last').value = String(lesson.measures)
+  keyboardOctave = 3
+  renderScore(element('score'), lesson)
+  makeKeyboard()
+  renderPedal()
+  rhythm = new RhythmDisplay(element('rhythm'), lesson, renderFingering)
+  rhythm.preview(settings().hands, 0)
+  refreshKeys()
+  updateSidebar()
+  for (const mode of ['guided', 'timed', 'demo'] as const) element(mode).onclick = () => void start(mode)
+  element('stop').onclick = () => { stop(); refreshKeys(); status('Practice stopped.') }
   element('sustain-pedal').onclick = () => {
     screenPedal = !screenPedal
     renderPedal()

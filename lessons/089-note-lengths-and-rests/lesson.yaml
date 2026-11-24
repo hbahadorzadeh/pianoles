@@ -1,0 +1,147 @@
+kind: theory
+id: 89
+unit: Music theory
+title: Note lengths and rests
+instruction: 'A note head shows pitch by where it sits. Its shape, stem, flags, and dots tell you how long
+  it lasts. The examples use a quarter note as one beat, as in 4/4. The shaded strip shows how much of a four-beat
+  bar each symbol takes.
+
+
+  Rests take time too. Keep counting through the silence. A dot adds half the original value, so a dotted quarter
+  lasts one and a half beats.'
+examples:
+  - label: Whole note
+    explanation: A hollow head without a stem. Hold it for four quarter-note beats.
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: whole
+  - label: Half note
+    explanation: A hollow head with a stem. Hold it for two beats.
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: half
+  - label: Quarter note
+    explanation: A filled head with a stem. Hold it for one beat.
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: quarter
+  - label: Eighth note
+    explanation: One flag or one beam. Two eighth notes fit into one quarter-note beat.
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: eighth
+  - label: Sixteenth note
+    explanation: Two flags or two beams. Four sixteenth notes fit into one quarter-note beat.
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: sixteenth
+  - label: Dotted quarter note
+    explanation: A quarter note plus half its value. Hold it for one and a half beats.
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: dotted-quarter
+  - label: Dotted half note
+    explanation: A half note plus one beat. Hold it for three beats.
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: dotted-half
+  - label: Whole rest
+    explanation: A block hangs below a line. It fills a whole bar of silence here.
+    visual:
+      type: rest
+      value: whole
+  - label: Half rest
+    explanation: A block sits on a line. In this example it means two beats of silence.
+    visual:
+      type: rest
+      value: half
+  - label: Quarter rest
+    explanation: The zigzag stands for one beat of silence.
+    visual:
+      type: rest
+      value: quarter
+  - label: Eighth rest
+    explanation: A single hook. It lasts half a beat.
+    visual:
+      type: rest
+      value: eighth
+questions:
+  - prompt: How long is this note if a quarter note is one beat?
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: half
+    choices:
+      - 1 beat
+      - 2 beats
+      - 4 beats
+    answer: 2 beats
+    explanation: The hollow head and stem show a half note.
+  - prompt: How long is this note?
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: eighth
+    choices:
+      - Half a beat
+      - 1 beat
+      - 2 beats
+    answer: Half a beat
+    explanation: One flag marks an eighth note.
+  - prompt: How many of these fit in one quarter-note beat?
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: sixteenth
+    choices:
+      - '2'
+      - '4'
+      - '8'
+    answer: '4'
+    explanation: Two flags mark a sixteenth note. Four fit in a quarter-note beat.
+  - prompt: How long is this dotted note?
+    visual:
+      type: note
+      pitch: C4
+      clef: treble
+      value: dotted-quarter
+    choices:
+      - 1 beat
+      - 1½ beats
+      - 2 beats
+    answer: 1½ beats
+    explanation: The dot adds half a beat to the quarter note.
+  - prompt: How long do you stay silent here?
+    visual:
+      type: rest
+      value: quarter
+    choices:
+      - Half a beat
+      - 1 beat
+      - 4 beats
+    answer: 1 beat
+    explanation: The zigzag is a quarter rest.
+  - prompt: Which combination fills a 4/4 bar?
+    choices:
+      - One half note and one quarter note
+      - Two quarter notes and a half rest
+      - Three eighth notes and a whole rest
+    answer: Two quarter notes and a half rest
+    explanation: One plus one plus two makes four beats.

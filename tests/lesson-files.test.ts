@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { parseLesson } from '../src/lesson-files'
 import { pedalAt, pedalSpans, playbackBeats } from '../src/pedal'
-import { lessons } from './catalog'
+import { lessons, playingLessons } from './catalog'
 
 const example = `
 id: 87
@@ -22,6 +23,7 @@ pedal:
 
 test('YAML holds both fingering and score-relative pedal cues', () => {
   const lesson = parseLesson(example)
+  assert.equal(lesson.kind, 'playing')
   assert.deepEqual(lesson.events[0].notes, [{ midi: 60, spelling: 'C4', finger: 1 }, { midi: 64, spelling: 'E4', finger: 3 }])
   assert.deepEqual(lesson.pedal, [{ beat: 0, down: true }, { beat: 4, down: false }])
   assert.equal(pedalAt(lesson.pedal, 3.5), true)
@@ -41,22 +43,32 @@ test('malformed lesson files report what the author should fix', () => {
 })
 
 test('the expansion includes credited historical works and pedal studies', () => {
-  assert.ok(lessons.slice(46, 56).every(lesson => lesson.credit))
-  assert.ok(lessons.slice(76, 86).every(lesson => lesson.credit))
-  assert.equal(lessons[74].title, 'First Sustain Pedal')
-  assert.ok(lessons[74].pedal.length)
-  assert.equal(lessons[85].title, 'Chopin Prelude in E Minor · opening study')
+  assert.ok(playingLessons.slice(46, 56).every(lesson => lesson.credit))
+  assert.ok(playingLessons.slice(76, 86).every(lesson => lesson.credit))
+  assert.equal(playingLessons[74].title, 'First Sustain Pedal')
+  assert.ok(playingLessons[74].pedal.length)
+  assert.equal(playingLessons[85].title, 'Chopin Prelude in E Minor · opening study')
 })
 
-test('the reading lessons cover all clef lines, spaces, and middle C in the correct hand', () => {
-  const cases = [
-    { lesson: lessons[86], hand: 'right', title: 'Read the treble clef', pitches: 'C4 E4 F4 G4 A4 B4 C5 D5 E5 F5' },
-    { lesson: lessons[87], hand: 'left', title: 'Read the bass clef', pitches: 'G2 A2 B2 C3 D3 E3 F3 G3 A3 C4' },
-  ]
-  for (const { lesson, hand, title, pitches } of cases) {
-    assert.equal(lesson.title, title)
-    assert.deepEqual(lesson.hands, [hand])
-    const written = new Set(lesson.events.flatMap(event => event.notes.map(note => note.spelling)))
-    for (const pitch of pitches.split(' ')) assert.ok(written.has(pitch), `${title} includes ${pitch}`)
-  }
+test('music theory lessons teach clefs, durations, rests, and multiple meters with no hand parts', () => {
+  const [treble, bass, durations, meter] = lessons.slice(86, 90)
+  assert.equal(treble.kind, 'theory')
+  assert.equal(bass.kind, 'theory')
+  assert.equal(durations.kind, 'theory')
+  assert.equal(meter.kind, 'theory')
+  assert.ok(treble.examples.some(example => example.visual.type === 'note' &&
+    example.visual.pitch === 'C4' && example.visual.clef === 'treble'))
+  assert.ok(bass.examples.some(example => example.visual.type === 'note' &&
+    example.visual.pitch === 'C4' && example.visual.clef === 'bass'))
+  assert.ok(durations.examples.some(example => example.visual.type === 'rest'))
+  assert.ok(durations.examples.some(example => example.visual.type === 'note' && example.visual.value === 'dotted-quarter'))
+  assert.deepEqual(meter.examples.flatMap(({ visual }) => visual.type === 'meter' ? visual.signature : []), ['2/4', '3/4', '4/4', '6/8', '2/2'])
+  assert.ok([treble, bass, durations, meter].every(lesson => !('parts' in lesson)))
+})
+
+test('theory validation rejects unsupported visuals, wrong answers, and playing fields', () => {
+  const source = readFileSync(new URL('../lessons/087-read-treble-clef/lesson.yaml', import.meta.url), 'utf8')
+  assert.throws(() => parseLesson(source.replace('answer: G', 'answer: X')), /answer must match/)
+  assert.throws(() => parseLesson(source.replace('clef: treble', 'clef: alto')), /visual.clef/)
+  assert.throws(() => parseLesson(source + '\ntempo: 60'), /Unknown field theory lesson.tempo/)
 })

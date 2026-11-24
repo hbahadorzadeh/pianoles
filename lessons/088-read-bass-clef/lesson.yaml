@@ -1,24 +1,99 @@
+kind: theory
 id: 88
-unit: Reading the staff
+unit: Music theory
 title: Read the bass clef
-instruction: |-
-  Find F3 on the line between the bass clef's dots. Middle C (C4) sits on a short ledger line above the bass staff.
+instruction: 'The bass clef gives the same five staff lines different pitch names. Its two dots surround the
+  F line. Use F as a landmark, then move a step at a time between adjacent lines and spaces.
 
-  Read from bottom to top. The lines are G2, B2, D3, F3, and A3. The spaces are A2, C3, E3, and G3.
 
-  Play the landmarks first, then read the line and space patterns with your left hand. For the final four measures, use the nearest landmark to name each note before playing.
-tempo: 58
-meter: 4
-key: C
-parts:
-  left:
-    - 'F3:2 C4:2'
-    - 'G2 B2 D3 F3'
-    - 'A3 F3 D3 B2'
-    - 'A2 C3 E3 G3'
-    - 'G3 E3 C3 A2'
-    - 'C4 G3 A3 F3'
-    - 'E3 B2 C3 G2'
-    - 'A3 D3 G3 B2'
-    - 'C3 F3 A2 E3'
-    - 'F3 C3 C4:2'
+  From bottom to top, the lines are G, B, D, F, A and the spaces are A, C, E, G.'
+examples:
+  - label: F between the dots
+    explanation: F is on the fourth line, with a bass clef dot above and below it.
+    visual:
+      type: note
+      pitch: F3
+      clef: bass
+      value: quarter
+  - label: C in the second space
+    explanation: The second space is C below middle C. The next line up is D.
+    visual:
+      type: note
+      pitch: C3
+      clef: bass
+      value: quarter
+  - label: G on the bottom line
+    explanation: Start your line count here. The space immediately above is A.
+    visual:
+      type: note
+      pitch: G2
+      clef: bass
+      value: quarter
+  - label: Middle C
+    explanation: In the bass clef, middle C sits on the first ledger line above the staff.
+    visual:
+      type: note
+      pitch: C4
+      clef: bass
+      value: quarter
+questions:
+  - prompt: Which note is between the clef dots?
+    visual:
+      type: note
+      pitch: F3
+      clef: bass
+      value: quarter
+    choices:
+      - D
+      - E
+      - F
+    answer: F
+    explanation: The dots surround the fourth line, F.
+  - prompt: Which note is in the second space?
+    visual:
+      type: note
+      pitch: C3
+      clef: bass
+      value: quarter
+    choices:
+      - A
+      - C
+      - E
+    answer: C
+    explanation: The bass spaces from the bottom are A, C, E, G.
+  - prompt: Which note is on the middle line?
+    visual:
+      type: note
+      pitch: D3
+      clef: bass
+      value: quarter
+    choices:
+      - B
+      - D
+      - F
+    answer: D
+    explanation: D is the third line from the bottom.
+  - prompt: Which note is in the top space?
+    visual:
+      type: note
+      pitch: G3
+      clef: bass
+      value: quarter
+    choices:
+      - E
+      - F
+      - G
+    answer: G
+    explanation: The fourth space, immediately above the F line, is G.
+  - prompt: What is shown above the staff?
+    visual:
+      type: note
+      pitch: C4
+      clef: bass
+      value: quarter
+    choices:
+      - Middle C
+      - Low C
+      - High F
+    answer: Middle C
+    explanation: Middle C sits on the first ledger line above the bass clef.

@@ -7,7 +7,7 @@ Keep lesson progress in the learner’s browser and make the course available as
 ## Requirements
 
 ### Requirement: Browser-local progress
-The app SHALL save full guided completions, best full timed scores, and the most recent lesson locally. It SHALL remain playable when persistent storage is unavailable.
+The app SHALL save guided and theory completions, best full timed scores, the most recent lesson, and the current view preference locally for each profile. It SHALL remain playable when persistent storage is unavailable.
 
 #### Scenario: Resume a session
 - **WHEN** a learner revisits the course home URL
@@ -20,9 +20,9 @@ The app SHALL build and deploy to the repository's GitHub Pages project path thr
 - **WHEN** a learner opens the project Pages URL
 - **THEN** the course loads its bundled assets and runs without an application server
 
-### Requirement: Separate Kids mode progress
-The app SHALL store Kids mode progress and the last Kids mode lesson independently from standard practice.
+### Requirement: Named learning profiles
+The app SHALL prompt for a learner name when no local profiles exist and offer controls to add and switch between profiles. It SHALL migrate earlier standard and Kids progress into separate profiles.
 
-#### Scenario: Switch back to standard practice
-- **WHEN** a learner exits Kids mode after completing a lesson
-- **THEN** the app resumes the standard practice lesson with its own completion state
+#### Scenario: Switch to another learner
+- **WHEN** a household member selects their named profile
+- **THEN** their saved lesson, scores, completion state, and Kids mode preference are restored
