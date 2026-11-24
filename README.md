@@ -2,6 +2,8 @@
 
 Pianoles is a browser-based piano course with 90 interactive lessons, from finding middle C to reading and playing two-hand pieces. The app includes standard notation, audio demonstrations, guided and timed practice, and progress saved in the current browser.
 
+[Open the free piano lessons](https://hbahadorzadeh.github.io/pianoles/)
+
 ## Run locally
 
 ```sh

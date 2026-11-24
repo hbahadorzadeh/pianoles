@@ -4,11 +4,95 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#121513" />
-    <meta name="description" content="Learn to read and play piano through 24 interactive lessons." />
-    <title>Pianoles · Piano practice</title>
+    <title>Free Online Piano Lessons &amp; Music Theory | Pianoles</title>
+    <meta name="description" content="Learn piano free with guided lessons, interactive sheet music, a virtual keyboard, MIDI feedback, classical pieces, and music theory. No account required." />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://hbahadorzadeh.github.io/pianoles/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Pianoles" />
+    <meta property="og:title" content="Pianoles · Free online piano lessons" />
+    <meta property="og:description" content="Play piano in your browser, read sheet music, or plug in a MIDI keyboard. Practice classical pieces, rhythm, and music theory at your own pace." />
+    <meta property="og:url" content="https://hbahadorzadeh.github.io/pianoles/" />
+    <meta property="og:image" content="https://hbahadorzadeh.github.io/pianoles/social-preview.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Pianoles lesson showing the Ode to Joy score above an on-screen piano keyboard." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pianoles · Free online piano lessons" />
+    <meta name="twitter:description" content="Interactive sheet music, MIDI feedback, classical pieces, and music theory for kids and adults." />
+    <meta name="twitter:image" content="https://hbahadorzadeh.github.io/pianoles/social-preview.jpg" />
+    <meta name="twitter:image:alt" content="Pianoles lesson showing the Ode to Joy score above an on-screen piano keyboard." />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Pianoles",
+        "url": "https://hbahadorzadeh.github.io/pianoles/",
+        "description": "Free browser piano lessons with sheet music, piano practice, MIDI feedback, and music theory for children and adults.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "JavaScript is required for interactive lessons. MIDI input requires a browser with Web MIDI support.",
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": 0, "priceCurrency": "USD" },
+        "screenshot": "https://hbahadorzadeh.github.io/pianoles/social-preview.jpg"
+      }
+    </script>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <div id="app"></div>
+    <div id="public-home">
+      <header class="public-header">
+        <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">♩</span>Pianoles<span class="brand-dot">.</span></a>
+        <a href="https://github.com/hbahadorzadeh/pianoles">View on GitHub</a>
+      </header>
+      <main class="public-overview">
+        <div class="public-hero">
+          <div>
+            <h1>Free online piano lessons</h1>
+            <p class="public-intro">Learn to read sheet music and play piano with 90 browser-based lessons. Start with middle C, build up to two-hand pieces, and practice at your own tempo.</p>
+            <section class="public-profile" aria-labelledby="first-profile-heading">
+              <h2 id="first-profile-heading">Who’s learning piano?</h2>
+              <p>Your name and progress stay in this browser. No account required.</p>
+              <form id="first-profile-form" class="profile-form">
+                <label for="first-profile-name">Your name</label>
+                <input id="first-profile-name" maxlength="40" required autocomplete="given-name">
+                <button class="primary" type="submit" disabled>Start learning</button>
+                <p role="status"></p>
+              </form>
+              <noscript><p>Enable JavaScript to use the interactive lessons.</p></noscript>
+            </section>
+          </div>
+          <figure class="public-preview">
+            <img src="./social-preview.jpg" width="1200" height="630" alt="Pianoles lesson showing the Ode to Joy score above the on-screen piano keyboard." />
+            <figcaption>Follow the sheet music and see which keys and fingers to use.</figcaption>
+          </figure>
+        </div>
+
+        <section class="public-lessons" aria-label="Explore piano lessons">
+          <article>
+            <h2>Play and practice piano</h2>
+            <p>Use the on-screen keyboard, computer keys, or a digital piano with Web MIDI. Follow along with the tempo, or get feedback on note choices, timing, and early releases in interactive practice.</p>
+            <a href="#/lesson/1">Start with middle C →</a>
+          </article>
+          <article>
+            <h2>Learn music theory</h2>
+            <p>Read treble and bass clefs, learn note and rest lengths, and hear the difference between time signatures. Listen to examples and check your understanding in short quizzes.</p>
+            <a href="#/lesson/87">Explore music theory →</a>
+          </article>
+          <article>
+            <h2>Practice classical pieces</h2>
+            <p>Try arrangements of Ode to Joy, Für Elise, and Moonlight Sonata. Slow down tricky measures, practice one hand at a time, or follow the sustain-pedal cues.</p>
+            <a href="#/lesson/30">Try Ode to Joy →</a>
+          </article>
+          <article>
+            <h2>Learn together</h2>
+            <p>Kids mode uses larger controls and visual cues. Family members can each save their own lessons, timed scores, and preferences on a shared browser.</p>
+          </article>
+        </section>
+      </main>
+    </div>
+    <div id="app" hidden></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

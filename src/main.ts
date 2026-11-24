@@ -1,4 +1,3 @@
-import './style.css'
 import { PianoAudio } from './audio'
 import { lessons, units } from 'virtual:lesson-catalog'
 import { pianoRange, type Event, type Hands, type Lesson } from './lessons'
@@ -11,6 +10,7 @@ import { pedalAt, playbackBeats } from './pedal'
 import { handDiagram, hasFingerings } from './fingering'
 
 const app = document.querySelector<HTMLDivElement>('#app')!
+const publicHome = document.querySelector<HTMLElement>('#public-home')!
 const profiles = loadProfiles()
 let currentProfile = profiles.profiles.find(profile => profile.id === profiles.activeId)
 let kidsMode = currentProfile?.kidsMode ?? false
@@ -103,20 +103,12 @@ function connectProfileForm(form: HTMLFormElement, resume: boolean): void {
 }
 
 function showFirstProfile(): void {
-  app.className = 'first-profile'
-  app.innerHTML = `
-    <main class="profile-welcome">
-      <h1>Who’s learning piano?</h1>
-      <p>Create a profile to save your progress on this browser.</p>
-      <form id="first-profile-form" class="profile-form">
-        <label for="first-profile-name">Your name</label>
-        <input id="first-profile-name" maxlength="40" required autocomplete="given-name">
-        <button class="primary" type="submit">Start learning</button>
-        <p role="status"></p>
-      </form>
-    </main>`
-  connectProfileForm(element<HTMLFormElement>('first-profile-form'), false)
-  element('first-profile-name').focus()
+  app.hidden = true
+  publicHome.hidden = false
+  const form = element<HTMLFormElement>('first-profile-form')
+  connectProfileForm(form, false)
+  form.querySelector('button')!.disabled = false
+  if (location.hash.startsWith('#/lesson/')) element('first-profile-name').focus()
 }
 
 function connectProfilesPanel(): void {
@@ -894,7 +886,10 @@ function display(): void {
     showFirstProfile()
     return
   }
-  app.classList.remove('first-profile')
+  const leavingOverview = !publicHome.hidden
+  publicHome.hidden = true
+  app.hidden = false
+  if (leavingOverview) window.scrollTo(0, 0)
   const match = /^#\/lesson\/([1-9]\d*)$/.exec(location.hash)
   const home = location.hash === '' || location.hash === '#/'
   const id = home ? Number(progress.last) || 1 : match ? Number(match[1]) : 0
