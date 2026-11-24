@@ -12,6 +12,8 @@ export class RhythmDisplay {
   private readonly cursor: HTMLElement
   private readonly summary: HTMLElement
   private readonly feedback: HTMLElement
+  private readonly releaseFeedback: HTMLElement
+  private readonly earlyReleases = new Map<Event, number>()
   private readonly timing = new Map<Event, { feedback: TimingFeedback; difference: number }>()
   private readonly guidedFills = new Map<Event, number>()
   private hands?: Hands
@@ -28,12 +30,16 @@ export class RhythmDisplay {
         ${Array.from({ length: lesson.meter }, (_, index) => `<span class="rhythm-beat">${index + 1}</span>`).join('')}
       </div>
       <div class="rhythm-timeline" aria-hidden="true"><div class="rhythm-lanes"></div><span class="rhythm-cursor" hidden></span></div>
-      <p id="rhythm-feedback" role="status" hidden></p>`
+      <div class="rhythm-feedback-row">
+        <p id="rhythm-feedback" role="status" hidden></p>
+        <p id="release-feedback" role="status" hidden></p>
+      </div>`
     this.pulses = [...root.querySelectorAll<HTMLElement>('.rhythm-beat')]
     this.lanes = root.querySelector('.rhythm-lanes')!
     this.cursor = root.querySelector('.rhythm-cursor')!
     this.summary = root.querySelector('#rhythm-summary')!
     this.feedback = root.querySelector('#rhythm-feedback')!
+    this.releaseFeedback = root.querySelector('#release-feedback')!
   }
 
   private pulse(index: number): void {
@@ -67,6 +73,7 @@ export class RhythmDisplay {
         this.blocks.push({ event, element, fill })
         const timing = this.timing.get(event)
         if (timing) element.dataset.timing = timing.feedback
+        this.showRelease(event, element)
       }
       return lane
     })
@@ -90,12 +97,35 @@ export class RhythmDisplay {
   clearTiming(keepSpace = false): void {
     this.timing.clear()
     this.guidedFills.clear()
-    this.blocks.forEach(({ element }) => delete element.dataset.timing)
+    this.earlyReleases.clear()
+    this.blocks.forEach(({ event, element }) => {
+      delete element.dataset.timing
+      this.showRelease(event, element)
+    })
+    this.releaseFeedback.textContent = ''
+    this.releaseFeedback.hidden = !keepSpace
     this.feedback.textContent = ''
     delete this.feedback.dataset.timing
     this.feedback.classList.remove('guided-timing')
     this.feedback.style.removeProperty('--timing-fill')
     this.feedback.hidden = !keepSpace
+  }
+
+  recordEarlyRelease(event: Event, pitch: number, fraction: number): void {
+    this.earlyReleases.set(event, Math.min(fraction, this.earlyReleases.get(event) ?? 1))
+    const block = this.blocks.find(block => block.event === event)
+    if (block) this.showRelease(event, block.element)
+    const spelling = event.notes.find(note => note.midi === pitch)?.spelling
+    this.releaseFeedback.textContent = `Released early · ${spelling}`
+    this.releaseFeedback.hidden = false
+  }
+
+  private showRelease(event: Event, element: HTMLElement): void {
+    const fraction = this.earlyReleases.get(event)
+    element.classList.toggle('released-early', fraction !== undefined)
+    if (fraction !== undefined) {
+      element.style.setProperty('--hold-fill', `${Math.max(0, fraction) * 100}%`)
+    }
   }
 
   recordTiming(
@@ -144,6 +174,7 @@ export class RhythmDisplay {
       for (const event of this.notesAt(hands, playedBeat)) {
         this.timing.delete(event)
         this.guidedFills.delete(event)
+        this.earlyReleases.delete(event)
       }
     }
     this.measure(hands, beat)
@@ -157,6 +188,7 @@ export class RhythmDisplay {
       const timing = this.timing.get(event)
       if (timing) element.dataset.timing = timing.feedback
       else delete element.dataset.timing
+      this.showRelease(event, element)
       fill.style.transform = `scaleX(${this.guidedFills.get(event) ?? 0})`
     }
     this.summary.textContent = this.notesAt(hands, beat).map(durationText).join(' / ')

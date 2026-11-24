@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { lessons } from '../src/lessons'
-import { matchTiming, matchesChord, practiceSteps, scoreAttempt } from '../src/practice'
+import { matchTiming, matchesChord, practiceSteps, releasedEarly, scoreAttempt } from '../src/practice'
 
 test('curriculum has 24 ordered, complete lessons within the playable keyboard', () => {
   assert.deepEqual(lessons.map(lesson => lesson.id), Array.from({ length: 24 }, (_, i) => i + 1))
@@ -63,4 +63,11 @@ test('live timing distinguishes early, on-beat and late hits and ignores unrelat
   assert.equal(matchTiming(steps, { pitch: 60, beat: 0.22 }, 1, claimed), undefined)
   assert.equal(matchTiming(steps, { pitch: 60, beat: 0.75 }, 1, claimed)?.beat, 1)
   assert.equal(matchTiming(steps, { pitch: 60, beat: 0.75 }, 0.5, claimed)?.feedback, 'on-beat')
+})
+
+test('short holds allow a small gap and still detect early releases at fast tempos', () => {
+  assert.equal(releasedEarly(700, 1000), true)
+  assert.equal(releasedEarly(820, 1000), false)
+  assert.equal(releasedEarly(149, 200), true)
+  assert.equal(releasedEarly(150, 200), false)
 })

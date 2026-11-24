@@ -2,7 +2,7 @@ import './style.css'
 import { PianoAudio } from './audio'
 import { lessons, units, type Event, type Hands, type Lesson } from './lessons'
 import { renderScore } from './notation'
-import { matchTiming, matchesChord, practiceSteps, scoreAttempt, timingFeedbackWindow, timingTolerance, type Hit, type Step } from './practice'
+import { matchTiming, matchesChord, practiceSteps, releasedEarly, scoreAttempt, timingFeedbackWindow, timingTolerance, type Hit, type Step } from './practice'
 import { loadProgress, readKidsMode, saveKidsMode, saveProgress } from './progress'
 import { RhythmDisplay } from './rhythm'
 import { fingerFor, handDiagram, lastLessonWithFingerings } from './fingering'
@@ -17,6 +17,8 @@ let fingerEvents: Event[] = []
 const audio = new PianoAudio()
 const held = new Map<string, number>()
 const pressed = new Set<number>()
+const pressedAt = new Map<number, number>()
+const noteHolds = new Map<number, { events: Event[]; started: number; beatMs: number }>()
 const freshChord = new Set<number>()
 const keys = new Map<number, HTMLButtonElement>()
 const noteNames = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B']
@@ -79,6 +81,7 @@ function stop(keepRhythm = false): void {
   guidedPrevious = undefined
   freshChord.clear()
   timed = undefined
+  if (!keepRhythm) noteHolds.clear()
   active = false
   cancelAnimationFrame(animation)
   audio.stopPlayback()
@@ -176,9 +179,18 @@ function refreshKeys(): void {
   })
 }
 
+function trackNoteHold(hands: Hands, beat: number, pitch: number, beatMs: number): void {
+  const started = pressedAt.get(pitch)
+  if (started === undefined || noteHolds.has(pitch)) return
+  const events = lesson.events.filter(event => event.beat === beat &&
+    (hands === 'both' || event.hand === hands) && event.notes.some(note => note.midi === pitch))
+  if (events.length) noteHolds.set(pitch, { events, started, beatMs })
+}
+
 function press(source: string, pitch: number, velocity = 0.72): void {
   if (held.has(source)) return
   held.set(source, pitch)
+  if (!pressed.has(pitch)) pressedAt.set(pitch, performance.now())
   pressed.add(pitch)
   void audio.press(pitch, velocity, () => pressed.has(pitch)).catch(() => {
     if (!active) status('Audio is unavailable. You can still use the notation and practice feedback.')
@@ -193,7 +205,9 @@ function press(source: string, pitch: number, velocity = 0.72): void {
       if (match) {
         claimed.add(match.beat)
         timed.claimed.set(pitch, claimed)
-        rhythm?.recordTiming(timed.hands, match.beat + timed.offset, pitch, match.feedback, match.difference)
+        const beat = match.beat + timed.offset
+        rhythm?.recordTiming(timed.hands, beat, pitch, match.feedback, match.difference)
+        trackNoteHold(timed.hands, beat, pitch, timed.secondsPerBeat * 1000)
       }
     }
   }
@@ -226,6 +240,7 @@ function checkGuided(): void {
     rhythm?.recordGuidedTransition(hands, guidedPrevious.beat, elapsedBeats, interval, bpm)
   }
   guidedPrevious = { beat, started }
+  for (const pitch of step.pitches) trackNoteHold(hands, beat, pitch, 60_000 / bpm)
   kidsCue('correct')
   freshChord.clear()
   stepIndex++
@@ -254,12 +269,22 @@ function checkGuided(): void {
   status(full ? 'Lesson complete. You can replay it or try timed practice.' : 'Practice complete.')
 }
 
-function release(source: string): void {
+function release(source: string, measureHold = true): void {
   const pitch = held.get(source)
   if (pitch === undefined) return
   held.delete(source)
   if (![...held.values()].includes(pitch)) {
     pressed.delete(pitch)
+    pressedAt.delete(pitch)
+    const noteHold = noteHolds.get(pitch)
+    noteHolds.delete(pitch)
+    if (noteHold && measureHold) {
+      const heldMs = performance.now() - noteHold.started
+      for (const event of noteHold.events) {
+        const writtenMs = event.duration * noteHold.beatMs
+        if (releasedEarly(heldMs, writtenMs)) rhythm?.recordEarlyRelease(event, pitch, heldMs / writtenMs)
+      }
+    }
     const releasedWrongNote = freshChord.delete(pitch) && !guided?.[stepIndex].pitches.has(pitch)
     audio.release(pitch)
     if (releasedWrongNote && freshChord.size) checkGuided()
@@ -295,7 +320,7 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
     kidsCue('play')
     guided = steps
     rhythm?.clearTiming(true)
-    status('Play the highlighted note or chord to start the bar.')
+    status('Play the highlighted note or chord to start the bar. Hold the key while its note fills.')
     showGuidedStep()
     return
   }
@@ -381,6 +406,7 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
           timed.start = roundStart
           timed.hits = []
           timed.claimed.clear()
+          noteHolds.clear()
           rhythm?.clearTiming(true)
           if (scores) element('result').textContent = `Last loop · ${scores.pitch}% pitch · ${scores.timing}% timing`
         }
@@ -514,7 +540,7 @@ function makeKeyboard(): void {
     key.addEventListener('keyup', event => {
       if (event.key === ' ' || event.key === 'Enter') release(`accessible:${currentPitch}`)
     })
-    key.addEventListener('blur', () => release(`accessible:${currentPitch}`))
+    key.addEventListener('blur', () => release(`accessible:${currentPitch}`, false))
     piano.append(key)
     keys.set(pitch, key)
   }
@@ -557,7 +583,7 @@ function setMidiStatus(message: string): void {
 async function selectMidi(input: MIDIInput | undefined): Promise<void> {
   if (input && midiInput === input) return
   if (midiInput) midiInput.onmidimessage = null
-  for (const source of held.keys()) if (source.startsWith('midi:')) release(source)
+  for (const source of held.keys()) if (source.startsWith('midi:')) release(source, false)
   midiInput = input
   midiLastNote = ''
   if (!input) {
@@ -819,9 +845,9 @@ function display(): void {
 window.addEventListener('hashchange', display)
 window.addEventListener('resize', positionHands)
 window.addEventListener('pointerup', event => release(`pointer:${event.pointerId}`))
-window.addEventListener('pointercancel', event => release(`pointer:${event.pointerId}`))
-window.addEventListener('lostpointercapture', event => release(`pointer:${event.pointerId}`))
-window.addEventListener('blur', () => { for (const source of held.keys()) release(source) })
+window.addEventListener('pointercancel', event => release(`pointer:${event.pointerId}`, false))
+window.addEventListener('lostpointercapture', event => release(`pointer:${event.pointerId}`, false))
+window.addEventListener('blur', () => { for (const source of held.keys()) release(source, false) })
 window.addEventListener('keydown', event => {
   if (event.repeat || event.ctrlKey || event.metaKey || event.altKey ||
       (event.target instanceof HTMLElement && event.target.matches('input,select,textarea,[contenteditable]'))) return

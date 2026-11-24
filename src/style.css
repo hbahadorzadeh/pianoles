@@ -354,3 +354,20 @@ h1 { font-size: clamp(30px, 4vw, 51px); font-weight: 730; letter-spacing: -.065e
 .kids-mode .measure { flex: 0 0 100%; max-width: none; scroll-snap-align: start; }
 .kids-mode .measure > span { display: none; }
 .kids-mode .measure svg { max-height: 145px; }
+
+.rhythm-feedback-row { display: flex; flex-wrap: wrap; gap: 0 14px; }
+#release-feedback {
+  min-height: 1.4em;
+  margin-top: 7px;
+  color: #46647f;
+  font-size: 13px;
+  font-weight: 750;
+}
+.rhythm-note.released-early { outline: 1px solid #a0b8d2; }
+.rhythm-note.released-early::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 5px;
+  background: linear-gradient(to right, #7897b5 var(--hold-fill), #e3ebf4 var(--hold-fill));
+}

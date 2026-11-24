@@ -20,6 +20,11 @@ export const timingTolerance = 0.18
 export const timingFeedbackWindow = 0.45
 export type TimingFeedback = 'early' | 'on-beat' | 'late'
 
+export function releasedEarly(heldMs: number, writtenMs: number): boolean {
+  const allowanceMs = Math.min(timingTolerance * 1000, writtenMs / 4)
+  return heldMs < writtenMs - allowanceMs
+}
+
 export function timingFeedback(difference: number): TimingFeedback {
   return Math.abs(difference) <= timingTolerance ? 'on-beat' : difference < 0 ? 'early' : 'late'
 }
