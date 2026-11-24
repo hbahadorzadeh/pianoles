@@ -28,6 +28,8 @@ let pitchOffset = 0
 const shortcuts = new Map<string, number>()
 let keyboardOctave = 3
 let highlighted = -1
+let hintPitches: ReadonlySet<number> = new Set()
+let hintPreference: boolean | undefined
 let midiAccess: MIDIAccess | undefined
 let midiInput: MIDIInput | undefined
 
@@ -62,6 +64,7 @@ function stop(): void {
   const stopButton = element<HTMLButtonElement>('stop')
   if (stopButton) stopButton.disabled = true
   highlight(-1)
+  setHintPitches(new Set())
 }
 
 function highlight(beat: number): void {
@@ -83,22 +86,36 @@ function showGuidedStep(): void {
   const step = guided?.[stepIndex]
   if (!step) return
   highlight(step.beat + pitchOffset)
-  if (element<HTMLInputElement>('key-hints').checked) {
-    const firstKey = keys.get(Math.min(...step.pitches))
-    const scroller = element('key-scroll')
-    if (firstKey && (firstKey.offsetLeft < scroller.scrollLeft || firstKey.offsetLeft + firstKey.offsetWidth > scroller.scrollLeft + scroller.clientWidth)) {
-      scroller.scrollLeft = Math.max(0, firstKey.offsetLeft - 28)
-    }
-  }
+  setHintPitches(step.pitches)
+}
+
+function setHintPitches(pitches: ReadonlySet<number>): void {
+  hintPitches = pitches
   refreshKeys()
+  revealHintPitches()
+}
+
+function revealHintPitches(): void {
+  if (!element<HTMLInputElement>('key-hints')?.checked || !hintPitches.size) return
+  const scroller = element('key-scroll')
+  const first = keys.get(Math.min(...hintPitches))
+  const last = keys.get(Math.max(...hintPitches))
+  if (!first || !last) return
+
+  const left = first.offsetLeft
+  const right = last.offsetLeft + last.offsetWidth
+  if (left < scroller.scrollLeft || right - left > scroller.clientWidth) {
+    scroller.scrollLeft = left
+  } else if (right > scroller.scrollLeft + scroller.clientWidth) {
+    scroller.scrollLeft = right - scroller.clientWidth
+  }
 }
 
 function refreshKeys(): void {
-  const expected = guided?.[stepIndex]?.pitches
   const hints = element<HTMLInputElement>('key-hints')?.checked
   keys.forEach((key, pitch) => {
     key.classList.toggle('held', pressed.has(pitch))
-    key.classList.toggle('hint', Boolean(hints && expected?.has(pitch)))
+    key.classList.toggle('hint', Boolean(hints && hintPitches.has(pitch)))
   })
 }
 
@@ -218,6 +235,7 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
     event.beat >= offset && event.beat < offset + duration)
   let roundStart = firstBeat
   let nextRoundScheduled = false
+  let lastHintBeat = -1
   for (let i = count; i > 0; i--) audio.click(firstBeat - i * secondsPerBeat, i === count)
 
   function schedule(at: number): void {
@@ -241,6 +259,16 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
     } else if (position < duration) {
       const beat = Math.floor(position * 2) / 2
       highlight(offset + beat)
+      if (beat !== lastHintBeat) {
+        lastHintBeat = beat
+        const pitches = new Set<number>()
+        for (const event of events) {
+          if (event.beat <= offset + beat && offset + beat < event.beat + event.duration) {
+            for (const note of event.notes) pitches.add(note.midi)
+          }
+        }
+        setHintPitches(pitches)
+      }
       status(mode === 'demo' ? 'Listening to the demonstration' : `Measure ${first + Math.floor(position / lesson.meter)} · Beat ${Math.floor(position % lesson.meter) + 1}`)
       if (loop && !nextRoundScheduled && position >= duration - 1) {
         schedule(roundStart + duration * secondsPerBeat)
@@ -250,6 +278,8 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
       const scores = timed && scoreAttempt(steps, timed.hits, secondsPerBeat)
       if (loop) {
         roundStart += duration * secondsPerBeat
+        lastHintBeat = -1
+        setHintPitches(new Set())
         if (!nextRoundScheduled) schedule(roundStart)
         nextRoundScheduled = false
         if (timed) {
@@ -455,10 +485,10 @@ function display(): void {
             <select id="hands">${lesson.hands.length === 2 ? '<option value="both">Both hands</option>' : ''}${lesson.hands.map(hand => `<option value="${hand}">${hand === 'left' ? 'Left' : 'Right'} hand</option>`).join('')}</select>
             <label class="checkbox"><input id="loop" type="checkbox" /> Loop measures</label>
             <div id="range" hidden><select id="first" aria-label="First measure">${barOptions}</select><span>–</span><select id="last" aria-label="Last measure">${barOptions}</select></div>
-            <label class="checkbox hints"><input id="key-hints" type="checkbox" ${lesson.id <= 3 ? 'checked' : ''} /> Key hints</label>
+            <label class="checkbox hints"><input id="key-hints" type="checkbox" ${(hintPreference ?? (lesson.id <= 3)) ? 'checked' : ''} /> Key hints</label>
           </div>
         </section>
-        <section class="keyboard" aria-labelledby="keyboard-heading">
+        <section class="keyboard${lesson.hands.length === 2 ? ' keyboard-compact' : ''}" aria-labelledby="keyboard-heading">
           <div class="keyboard-head"><div><h2 id="keyboard-heading">Piano keyboard</h2><p>Play with touch or follow the shortcut letters.</p></div>
             <div class="octaves"><button id="octave-down" aria-label="Lower keyboard octave">−</button><span id="octave-label"></span><button id="octave-up" aria-label="Raise keyboard octave">+</button></div>
           </div>
@@ -497,7 +527,11 @@ function display(): void {
   element('octave-down').onclick = () => { keyboardOctave--; updateOctave() }
   element('octave-up').onclick = () => { keyboardOctave++; updateOctave() }
   element('tempo').oninput = () => { element('bpm').textContent = `${settings().bpm} BPM` }
-  element('key-hints').onchange = refreshKeys
+  element<HTMLInputElement>('key-hints').onchange = () => {
+    hintPreference = element<HTMLInputElement>('key-hints').checked
+    refreshKeys()
+    revealHintPitches()
+  }
   for (const control of ['tempo', 'hands', 'loop', 'first', 'last']) {
     element(control).onchange = () => {
       const { first, last } = settings()
