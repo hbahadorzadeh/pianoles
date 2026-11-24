@@ -1,0 +1,36 @@
+id: 77
+unit: Classical masterworks
+title: Beethoven’s Fifth · opening motif
+instruction: Hear the three short notes lead into the long fourth note. Give each repeat the same rhythm and leave
+  a clear gap before the answer.
+tempo: 80
+meter: 2
+key: Cm
+credit: Ludwig van Beethoven · Symphony No. 5, Op. 67 · opening motif and original ending
+parts:
+  right:
+    - -:0.5 G4:0.5 G4:0.5 G4:0.5
+    - Eb4:2
+    - -:0.5 F4:0.5 F4:0.5 F4:0.5
+    - D4:2
+    - -:0.5 G4:0.5 G4:0.5 G4:0.5
+    - Eb4:2
+    - -:0.5 F4:0.5 F4:0.5 F4:0.5
+    - D4:2
+    - G4 Ab4
+    - G4 F4
+    - Eb4 D4
+    - C4:2
+  left:
+    - -:2
+    - C3:2
+    - -:2
+    - G2:2
+    - -:2
+    - C3:2
+    - -:2
+    - G2:2
+    - C3:2
+    - G2:2
+    - Ab2 G2
+    - C3:2

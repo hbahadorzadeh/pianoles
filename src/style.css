@@ -382,3 +382,31 @@ h1 { font-size: clamp(30px, 4vw, 51px); font-weight: 730; letter-spacing: -.065e
   height: 5px;
   background: linear-gradient(to right, #7897b5 var(--hold-fill), #e3ebf4 var(--hold-fill));
 }
+
+.pedal-control { display: flex; justify-content: center; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 5px 0; }
+#sustain-pedal {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 27px;
+  font-size: 11px;
+  color: #e1eadb;
+  background: #2b392d;
+  border-color: #50624e;
+}
+.pedal-shape {
+  width: 22px;
+  height: 8px;
+  border-radius: 7px 4px 4px 7px;
+  transform: rotate(-13deg);
+  background: #adbcaa;
+}
+#sustain-pedal[aria-pressed=true] { color: #173225; border-color: #c8e897; background: #c8e897; }
+#sustain-pedal[aria-pressed=true] .pedal-shape { transform: rotate(0); background: #36543f; }
+#pedal-cue { display: inline-flex; align-items: center; gap: 4px; color: #e0efcf; font-size: 12px; }
+#pedal-cue-icon { font-size: 17px; line-height: 1; }
+.rhythm-pedal { position: relative; height: 5px; }
+.rhythm-pedal span { position: absolute; top: 0; height: 5px; border: 1px solid #789380; border-top: none; border-radius: 0 0 2px 2px; }
+.kids-mode #sustain-pedal { min-height: 44px; min-width: 55px; justify-content: center; }
+.kids-mode #sustain-pedal > span:last-child { display: none; }
+.kids-mode #pedal-cue-text { position: absolute; clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; }

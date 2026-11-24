@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { lessons } from '../src/lessons'
+import { lessons } from './catalog'
 import { matchTiming, matchesChord, practiceSteps, releasedEarly, scoreAttempt } from '../src/practice'
 
-test('curriculum has 36 ordered, complete lessons within the playable keyboard', () => {
-  assert.deepEqual(lessons.map(lesson => lesson.id), Array.from({ length: 36 }, (_, i) => i + 1))
+test('curriculum contains the expanded course in order and within the playable keyboard', () => {
+  assert.ok(lessons.length >= 86)
+  assert.deepEqual(lessons.map(lesson => lesson.id), Array.from({ length: lessons.length }, (_, i) => i + 1))
   for (const lesson of lessons) {
     for (const hand of lesson.hands) {
       const events = lesson.events.filter(event => event.hand === hand)
@@ -19,7 +20,7 @@ test('curriculum has 36 ordered, complete lessons within the playable keyboard',
     }
   }
   assert.equal(lessons[23].title, 'Evening Duet')
-  assert.ok(lessons.slice(24).every(lesson => lesson.credit))
+  assert.ok(lessons.slice(24, 36).every(lesson => lesson.credit))
   assert.equal(lessons[35].title, 'Prelude in C · opening study')
   assert.deepEqual(lessons[23].hands, ['right', 'left'])
   assert.equal(lessons[23].measures, 12)

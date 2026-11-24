@@ -1,0 +1,27 @@
+id: 26
+unit: Familiar melodies
+title: Au clair de la lune
+instruction: Play the three opening C notes evenly. When you reach the low G, move your hand down and then return
+  to C.
+tempo: 68
+meter: 4
+key: C
+credit: Traditional French melody
+parts:
+  right:
+    - C4 C4 C4 D4
+    - E4:2 D4:2
+    - C4 E4 D4 D4
+    - C4:4
+    - C4 C4 C4 D4
+    - E4:2 D4:2
+    - C4 E4 D4 D4
+    - C4:4
+    - D4 D4 D4 D4
+    - A3:2 A3:2
+    - D4 C4 B3 A3
+    - G3:4
+    - C4 C4 C4 D4
+    - E4:2 D4:2
+    - C4 E4 D4 D4
+    - C4:4

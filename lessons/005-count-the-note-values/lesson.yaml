@@ -1,0 +1,14 @@
+id: 5
+unit: Keyboard & notation
+title: Count the note values
+instruction: Count four steady beats per measure. A quarter note takes one beat, a half note two, and a whole note
+  four.
+tempo: 64
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1:4
+    - D4/2:2 E4/3:2
+    - F4/4 E4/3 D4/2 C4/1
+    - C4/1:4

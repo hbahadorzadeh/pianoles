@@ -1,0 +1,18 @@
+id: 15
+unit: Hands together
+title: First chords
+instruction: Place the fingers for each chord before playing. Aim to sound all notes of the chord together.
+tempo: 60
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1+E4/3:2 E4/3+G4/5:2
+    - C4/1+F4/4:2 D4/2+G4/5:2
+    - E4/3+G4/5:2 D4/2+F4/4:2
+    - C4/1+E4/3+G4/5:4
+  left:
+    - C3/5:2 C3/5:2
+    - F3/2:2 G3/1:2
+    - C3/5:2 G3/1:2
+    - C3/5:4

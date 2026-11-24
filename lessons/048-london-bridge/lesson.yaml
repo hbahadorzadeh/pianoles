@@ -1,0 +1,19 @@
+id: 48
+unit: Folk tunes & songs
+title: London Bridge
+instruction: Move your whole hand slightly right for the A and back left for E. Listen for the repeating opening
+  pattern.
+tempo: 72
+meter: 4
+key: C
+credit: Traditional English nursery tune · simplified melody
+parts:
+  right:
+    - G4 A4 G4 F4
+    - E4 F4 G4:2
+    - D4 E4 F4:2
+    - E4 F4 G4:2
+    - G4 A4 G4 F4
+    - E4 F4 G4:2
+    - D4:2 G4:2
+    - E4 C4 C4:2

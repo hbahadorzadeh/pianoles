@@ -1,0 +1,18 @@
+id: 43
+unit: Rhythm & reading
+title: A Waltz for One Hand
+instruction: Feel one-two-three and play the first beat a little heavier. Keep counting when a note lasts all three
+  beats.
+tempo: 72
+meter: 3
+key: C
+parts:
+  right:
+    - E4/3:2 G4/5
+    - F4/4 E4/3 D4/2
+    - C4/1:2 E4/3
+    - G4/5:3
+    - F4/4:2 G4/5
+    - E4/3 D4/2 F4/4
+    - E4/3:1.5 D4/2:0.5 E4/3
+    - C4/1:3

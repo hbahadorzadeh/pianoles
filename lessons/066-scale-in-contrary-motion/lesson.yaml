@@ -1,0 +1,19 @@
+id: 66
+unit: Keys & technique
+title: Scale in Contrary Motion
+instruction: Let both thumbs start on C an octave apart. Move the hands away from one another, then bring them back
+  together.
+tempo: 68
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1 D4/2 E4/3 F4/1
+    - G4/2 A4/3 B4/4 C5/5
+    - C5/5 B4/4 A4/3 G4/2
+    - F4/1 E4/3 D4/2 C4/1
+  left:
+    - C3/1 B2/2 A2/3 G2/1
+    - F2/2 E2/3 D2/4 C2/5
+    - C2/5 D2/4 E2/3 F2/2
+    - G2/1 A2/3 B2/2 C3/1

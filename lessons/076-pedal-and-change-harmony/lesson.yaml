@@ -1,0 +1,76 @@
+id: 76
+unit: Two-hand arrangements
+title: Pedal and Change Harmony
+instruction: Let each broken chord ring together. Clear the pedal just before the next harmony, then listen for
+  the difference on a second pass without pedal.
+tempo: 68
+meter: 4
+key: C
+parts:
+  right:
+    - C4 E4 G4:2
+    - F4 A4 C5:2
+    - D4 F4 B4:2
+    - E4 G4 C5:2
+    - E4 A4 C5:2
+    - F4 A4 C5:2
+    - D4 G4 B4:2
+    - C5:4
+  left:
+    - C3:2 G3:2
+    - F3:2 C4:2
+    - G2:2 D3:2
+    - C3:2 G3:2
+    - A2:2 E3:2
+    - F3:2 C4:2
+    - G2:2 D3:2
+    - C3:4
+pedal:
+  - measure: 1
+    beat: 1
+    action: down
+  - measure: 1
+    beat: 4.5
+    action: up
+  - measure: 2
+    beat: 1
+    action: down
+  - measure: 2
+    beat: 4.5
+    action: up
+  - measure: 3
+    beat: 1
+    action: down
+  - measure: 3
+    beat: 4.5
+    action: up
+  - measure: 4
+    beat: 1
+    action: down
+  - measure: 4
+    beat: 4.5
+    action: up
+  - measure: 5
+    beat: 1
+    action: down
+  - measure: 5
+    beat: 4.5
+    action: up
+  - measure: 6
+    beat: 1
+    action: down
+  - measure: 6
+    beat: 4.5
+    action: up
+  - measure: 7
+    beat: 1
+    action: down
+  - measure: 7
+    beat: 4.5
+    action: up
+  - measure: 8
+    beat: 1
+    action: down
+  - measure: 8
+    beat: 4.5
+    action: up

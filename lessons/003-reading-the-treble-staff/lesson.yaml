@@ -1,0 +1,13 @@
+id: 3
+unit: Keyboard & notation
+title: Reading the treble staff
+instruction: The treble clef curls around the G line. Put your fifth finger on G and notice how F sits in the space
+  just below.
+tempo: 60
+meter: 4
+key: C
+parts:
+  right:
+    - E4/3 F4/4 G4/5:2
+    - G4/5 F4/4 E4/3 D4/2
+    - C4/1:4

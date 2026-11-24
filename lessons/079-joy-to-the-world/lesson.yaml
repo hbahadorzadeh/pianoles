@@ -1,0 +1,38 @@
+id: 79
+unit: Classical masterworks
+title: Joy to the World
+instruction: Think of the opening as a descending scale. Follow the rhythm rather than rushing down the familiar
+  pitches.
+tempo: 83
+meter: 4
+key: C
+credit: Lowell Mason · ANTIOCH, published in 1839 · simplified two-hand setting
+parts:
+  right:
+    - C5:2 B4:1.5 A4:0.5
+    - G4:2 F4 E4
+    - D4:2 C4:2
+    - G4:2 A4:2
+    - A4:2 B4:2
+    - B4:2 C5:2
+    - C5 C5 B4 A4
+    - G4 F4 E4 C5
+    - C5 B4 A4 G4
+    - F4 E4 E4 E4
+    - E4 F4 G4:2
+    - F4 E4 D4 D4
+    - E4 D4 C4:2
+  left:
+    - C3:4
+    - C3:4
+    - G2:2 C3:2
+    - C3:2 F3:2
+    - F3:2 G3:2
+    - G3:2 C3:2
+    - C3:4
+    - C3:4
+    - C3:4
+    - F3:2 C3:2
+    - C3:4
+    - F3:2 G3:2
+    - C3:4

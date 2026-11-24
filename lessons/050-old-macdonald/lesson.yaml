@@ -1,0 +1,20 @@
+id: 50
+unit: Folk tunes & songs
+title: Old MacDonald
+instruction: Prepare the jump from C down to G. Play the first phrase lightly, then let the EE-I-EE-I-O ending ring.
+tempo: 76
+meter: 4
+key: C
+credit: Traditional folk song · simplified melody
+parts:
+  right:
+    - C4 C4 C4 G3
+    - A3 A3 G3:2
+    - E4 E4 D4 D4
+    - C4:4
+    - G3:0.5 G3:0.5 C4 C4 C4
+    - G3:0.5 G3:0.5 C4 C4 C4
+    - C4 C4 C4 G3
+    - A3 A3 G3:2
+    - E4 E4 D4 D4
+    - C4:4

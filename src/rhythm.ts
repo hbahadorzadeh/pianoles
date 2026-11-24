@@ -1,4 +1,5 @@
 import type { Event, Hands, Lesson } from './lessons'
+import { pedalSpans } from './pedal'
 import { timingFeedback, type TimingFeedback } from './practice'
 
 function durationText(event: Event): string {
@@ -77,6 +78,18 @@ export class RhythmDisplay {
       }
       return lane
     })
+    if (this.lesson.pedal.length) {
+      const lane = document.createElement('div')
+      lane.className = 'rhythm-pedal'
+      lane.title = 'Written sustain pedal'
+      for (const span of pedalSpans(this.lesson.pedal, start, start + this.lesson.meter)) {
+        const region = document.createElement('span')
+        region.style.left = `${(span.start - start) / this.lesson.meter * 100}%`
+        region.style.width = `${(span.end - span.start) / this.lesson.meter * 100}%`
+        lane.append(region)
+      }
+      lanes.push(lane)
+    }
     this.lanes.replaceChildren(...lanes)
   }
 

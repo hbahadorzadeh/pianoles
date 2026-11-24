@@ -1,0 +1,13 @@
+id: 65
+unit: Keys & technique
+title: Three Shapes of a Triad
+instruction: Play each three-note shape together. Listen for the same C-major sound when the notes change order.
+tempo: 67
+meter: 4
+key: C
+parts:
+  right:
+    - C4+E4+G4:2 E4+G4+C5:2
+    - G4+C5+E5:2 E4+G4+C5:2
+    - D4+F4+A4:2 F4+A4+D5:2
+    - G4+B4+D5:2 C4+E4+G4:2

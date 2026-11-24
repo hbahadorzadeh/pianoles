@@ -1,6 +1,6 @@
 # Pianoles
 
-Pianoles is a browser-based piano course with 36 interactive lessons, from finding middle C to reading and playing two-hand pieces. The app includes standard notation, audio demonstrations, guided and timed practice, and progress saved in the current browser.
+Pianoles is a browser-based piano course with 86 interactive lessons, from finding middle C to reading and playing two-hand pieces. The app includes standard notation, audio demonstrations, guided and timed practice, and progress saved in the current browser.
 
 ## Run locally
 
@@ -13,7 +13,7 @@ Open the Vite URL under `/pianoles/`. Run `npm test` for the curriculum and prac
 
 ## Play
 
-Lessons 25–36 are original Pianoles arrangements of public-domain tunes and classical excerpts. Each lesson credits its source and identifies adaptations.
+The course includes credited arrangements of public-domain tunes and classical excerpts alongside original exercises. Sustain studies show pedal cues below the keyboard and accept the on-screen pedal or a MIDI sustain pedal.
 
 - Use touch or mouse on the piano, or follow the shortcut letters on the displayed keys.
 - For a digital piano, connect USB or pair the Bluetooth MIDI device in the operating system, then select **Connect MIDI** in a browser that supports Web MIDI. Choose the input in the MIDI panel and play a note to check that it is received. Bluetooth works when the browser exposes the paired input.
@@ -21,7 +21,11 @@ Lessons 25–36 are original Pianoles arrangements of public-domain tunes and cl
 - Share a specific lesson with a URL such as `/pianoles/#/lesson/18`.
 
 - Use **Beat & duration** to see how long notes and rests last. The playhead moves during timed practice and demonstrations.
-- Turn on **Kids mode** for large icons, slower demonstrations that lead into guided play, and separate progress. Matching colored fingertips on the hand diagram and keyboard suggest fingering in lessons 1–15, 25, 29, and 30.
+- Turn on **Kids mode** for large icons, slower demonstrations that lead into guided play, and separate progress. Matching colored fingertips on the hand diagram and keyboard show suggested fingering in lessons that include it.
+
+## Contribute a lesson
+
+Each lesson has its own YAML file. The contributor guide covers note syntax, fingering, sustain cues, and validation. [Read the lesson authoring guide](lessons/README.md)
 
 ## Publish
 

@@ -1,0 +1,28 @@
+id: 30
+unit: Familiar melodies
+title: Ode to Joy · theme
+instruction: Learn the melody first, then add the long left-hand notes. Keep the left hand down while the right
+  hand moves.
+tempo: 72
+meter: 4
+key: C
+credit: Ludwig van Beethoven · Symphony No. 9, opening theme excerpt
+parts:
+  right:
+    - E4/3 E4/3 F4/4 G4/5
+    - G4/5 F4/4 E4/3 D4/2
+    - C4/1 C4/1 D4/2 E4/3
+    - E4/3:1.5 D4/2:0.5 D4/2:2
+    - E4/3 E4/3 F4/4 G4/5
+    - G4/5 F4/4 E4/3 D4/2
+    - C4/1 C4/1 D4/2 E4/3
+    - D4/2:1.5 C4/1:0.5 C4/1:2
+  left:
+    - C3/5:4
+    - G3/1:4
+    - C3/5:4
+    - G3/1:4
+    - C3/5:4
+    - G3/1:4
+    - C3/5:4
+    - G3/1:2 C3/5:2

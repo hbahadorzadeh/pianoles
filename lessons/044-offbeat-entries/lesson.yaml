@@ -1,0 +1,14 @@
+id: 44
+unit: Rhythm & reading
+title: Offbeat Entries
+instruction: Start after the beat in the measures that begin with an eighth rest. Tap a steady pulse with your free
+  hand.
+tempo: 70
+meter: 4
+key: C
+parts:
+  right:
+    - -:0.5 C4/1:1.5 E4/3 G4/5
+    - -:0.5 F4/4:1.5 E4/3 D4/2
+    - -:0.5 E4/3:1.5 F4/4 E4/3
+    - D4/2:1.5 E4/3:0.5 C4/1:2

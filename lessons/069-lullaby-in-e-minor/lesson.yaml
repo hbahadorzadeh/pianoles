@@ -1,0 +1,27 @@
+id: 69
+unit: Two-hand arrangements
+title: Lullaby in E Minor
+instruction: Let each right-hand note float above the left-hand pattern. Keep the highest notes gentle and leave
+  room at the cadence.
+tempo: 64
+meter: 3
+key: Em
+parts:
+  right:
+    - B4:3
+    - G4:2 E4
+    - F#4:2 A4
+    - G4:3
+    - B4:2 C5
+    - B4 A4 G4
+    - F#4:2 D#4
+    - E4:3
+  left:
+    - E3 B3 G3
+    - E3 B3 G3
+    - B2 F#3 A3
+    - E3 B3 G3
+    - C3 G3 E3
+    - A2 E3 C3
+    - B2 F#3 D#3
+    - E3:3

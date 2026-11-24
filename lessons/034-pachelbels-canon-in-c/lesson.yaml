@@ -1,0 +1,46 @@
+id: 34
+unit: Classical & traditional studies
+title: Pachelbel’s Canon · in C
+instruction: Practice the eight-bar bass pattern alone, then add the descending melody. The second time through,
+  keep that same bass steady as the right hand becomes more active.
+tempo: 76
+meter: 4
+key: C
+credit: Johann Pachelbel · Canon in D, transposed theme and variation
+parts:
+  right:
+    - E5:4
+    - D5:4
+    - C5:4
+    - B4:4
+    - A4:4
+    - G4:4
+    - A4:4
+    - B4:4
+    - E5:2 C5 G4
+    - D5:2 B4 G4
+    - C5:2 A4 E4
+    - B4:2 G4 E4
+    - A4:2 C5 F4
+    - G4:2 E4 C4
+    - A4:2 C5 F4
+    - B4:2 D5 G4
+    - C5:4
+  left:
+    - C3:2 G3:2
+    - G2:2 D3:2
+    - A2:2 E3:2
+    - E3:2 B3:2
+    - F3:2 C4:2
+    - C3:2 G3:2
+    - F3:2 C4:2
+    - G2:2 D3:2
+    - C3 G3 E3 G3
+    - G2 D3 B2 D3
+    - A2 E3 C3 E3
+    - E3 B3 G3 B3
+    - F3 C4 A3 C4
+    - C3 G3 E3 G3
+    - F3 C4 A3 C4
+    - G2 D3 B2 D3
+    - C3:4

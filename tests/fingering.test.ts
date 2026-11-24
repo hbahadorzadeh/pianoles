@@ -1,12 +1,11 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { fingerFor, lastLessonWithFingerings } from '../src/fingering'
-import { lessons } from '../src/lessons'
+import { lessons } from './catalog'
 
 test('authored fingerings cover beginner notes without reusing a finger in a chord', () => {
-  for (const lesson of lessons.slice(0, lastLessonWithFingerings)) {
+  for (const lesson of lessons.slice(0, 15)) {
     for (const event of lesson.events) {
-      const fingers = event.notes.map(note => fingerFor(lesson, event, note.spelling))
+      const fingers = event.notes.map(note => note.finger)
       assert.ok(fingers.every(finger => finger !== undefined), `Lesson ${lesson.id}, beat ${event.beat}`)
       assert.equal(new Set(fingers).size, fingers.length)
     }
@@ -15,8 +14,8 @@ test('authored fingerings cover beginner notes without reusing a finger in a cho
 
 test('fingering follows the hand and a change of position', () => {
   const bass = lessons[3]
-  assert.equal(fingerFor(bass, bass.events[0], 'C3'), 5)
+  assert.equal(bass.events[0].notes[0].finger, 5)
   const shift = lessons[11]
   const notes = shift.events.filter(event => event.notes[0]?.spelling === 'G4')
-  assert.deepEqual(notes.map(event => fingerFor(shift, event, 'G4')), [5, 1, 1, 1])
+  assert.deepEqual(notes.map(event => event.notes[0].finger), [5, 1, 1, 1])
 })

@@ -1,0 +1,18 @@
+id: 42
+unit: Rhythm & reading
+title: March in Two
+instruction: Count a strong first beat and a light second beat. Keep the eighth-note answers inside that two-beat
+  pulse.
+tempo: 80
+meter: 2
+key: C
+parts:
+  right:
+    - C4/1 E4/3
+    - G4/5 E4/3
+    - F4/4:0.5 E4/3:0.5 D4/2
+    - C4/1:2
+    - E4/3 G4/5
+    - F4/4 E4/3
+    - D4/2:0.5 E4/3:0.5 D4/2
+    - C4/1:2

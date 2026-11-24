@@ -1,0 +1,14 @@
+id: 40
+unit: Rhythm & reading
+title: Dotted Steps
+instruction: A dotted quarter lasts one and a half beats. Pair it with an eighth note to fill two beats, then repeat
+  on a different pitch.
+tempo: 66
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1:1.5 D4/2:0.5 E4/3:1.5 G4/5:0.5
+    - F4/4:1.5 E4/3:0.5 D4/2:2
+    - E4/3:1.5 F4/4:0.5 G4/5:1.5 E4/3:0.5
+    - D4/2:1.5 E4/3:0.5 C4/1:2

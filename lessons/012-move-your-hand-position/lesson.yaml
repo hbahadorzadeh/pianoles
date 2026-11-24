@@ -1,0 +1,14 @@
+id: 12
+unit: One hand at a time
+title: Move your hand position
+instruction: Play C through G with one finger per key. During the rest, shift your whole hand to start on G.
+tempo: 74
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1 D4/2 E4/3 F4/4
+    - G4/5:2 -:2
+    - G4/1 A4/2 B4/3 C5/4
+    - D5/5:2 B4/3 G4/1
+    - G4/1:4

@@ -1,0 +1,27 @@
+id: 67
+unit: Two-hand arrangements
+title: Bass and Chord Waltz
+instruction: Play the bass on beat one and the left-hand chord on beats two and three. Keep those chords quieter
+  than the melody.
+tempo: 75
+meter: 3
+key: C
+parts:
+  right:
+    - E4:2 G4
+    - F4:2 A4
+    - G4:2 B4
+    - C5:3
+    - A4:2 G4
+    - F4 E4 D4
+    - E4 D4 B3
+    - C4:3
+  left:
+    - C3 E3+G3 E3+G3
+    - F3 A3+C4 A3+C4
+    - G2 B2+D3 B2+D3
+    - C3 E3+G3 E3+G3
+    - A2 C3+E3 C3+E3
+    - F3 A3+C4 A3+C4
+    - G2 B2+D3 B2+D3
+    - C3:3

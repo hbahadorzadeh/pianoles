@@ -1,0 +1,27 @@
+id: 29
+unit: Familiar melodies
+title: Jingle Bells · chorus
+instruction: Use small, even lifts for the repeated E notes. Keep your right hand in C position and give the longer
+  phrase endings their full time.
+tempo: 82
+meter: 4
+key: C
+credit: James Lord Pierpont · 1857 chorus, simplified
+parts:
+  right:
+    - E4/3 E4/3 E4/3:2
+    - E4/3 E4/3 E4/3:2
+    - E4/3 G4/5 C4/1 D4/2
+    - E4/3:4
+    - F4/4 F4/4 F4/4 F4/4
+    - F4/4 E4/3 E4/3 E4/3:0.5 E4/3:0.5
+    - E4/3 D4/2 D4/2 E4/3
+    - D4/2:2 G4/5:2
+    - E4/3 E4/3 E4/3:2
+    - E4/3 E4/3 E4/3:2
+    - E4/3 G4/5 C4/1 D4/2
+    - E4/3:4
+    - F4/4 F4/4 F4/4 F4/4
+    - F4/4 E4/3 E4/3 E4/3:0.5 E4/3:0.5
+    - G4/5 G4/5 F4/4 D4/2
+    - C4/1:4

@@ -1,0 +1,85 @@
+id: 86
+unit: Classical masterworks
+title: Chopin Prelude in E Minor · opening study
+instruction: Hold the melody over the slowly changing chords. Listen for the left-hand notes that descend by a semitone
+  and keep them softer than the melody.
+tempo: 58
+meter: 4
+key: Em
+credit: Frédéric Chopin · Op. 28 No. 4 · simplified opening harmony study
+parts:
+  right:
+    - B4:3 C5
+    - B4:4
+    - B4:3 C5
+    - B4:4
+    - A4:3 B4
+    - A4:4
+    - G4:2 A4:2
+    - F#4:2 D#4:2
+    - E4:4
+  left:
+    - B2+E3+G3:2 B2+E3+G3:2
+    - B2+E3+F#3:2 B2+E3+F#3:2
+    - Bb2+E3+G3:2 Bb2+E3+G3:2
+    - A2+E3+G3:2 A2+E3+G3:2
+    - A2+D#3+F#3:2 A2+D#3+F#3:2
+    - G#2+D#3+F#3:2 G#2+D#3+F#3:2
+    - A2+C3+E3:2 A2+C3+E3:2
+    - B2+D#3+F#3:2 B2+D#3+F#3:2
+    - E2+B2+E3:4
+pedal:
+  - measure: 1
+    beat: 1
+    action: down
+  - measure: 1
+    beat: 4.5
+    action: up
+  - measure: 2
+    beat: 1
+    action: down
+  - measure: 2
+    beat: 4.5
+    action: up
+  - measure: 3
+    beat: 1
+    action: down
+  - measure: 3
+    beat: 4.5
+    action: up
+  - measure: 4
+    beat: 1
+    action: down
+  - measure: 4
+    beat: 4.5
+    action: up
+  - measure: 5
+    beat: 1
+    action: down
+  - measure: 5
+    beat: 4.5
+    action: up
+  - measure: 6
+    beat: 1
+    action: down
+  - measure: 6
+    beat: 4.5
+    action: up
+  - measure: 7
+    beat: 1
+    action: down
+  - measure: 7
+    beat: 4.5
+    action: up
+  - measure: 8
+    beat: 1
+    action: down
+  - measure: 8
+    beat: 4.5
+    action: up
+  - measure: 9
+    beat: 1
+    action: down
+  - measure: 9
+    beat: 4.5
+    action: up

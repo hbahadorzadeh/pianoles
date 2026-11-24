@@ -1,0 +1,15 @@
+id: 62
+unit: Keys & technique
+title: E Minor With a Leading Note
+instruction: Use F-sharp from the key signature. When D-sharp appears, listen to how close it sounds to E.
+tempo: 70
+meter: 4
+key: Em
+parts:
+  right:
+    - E4 F#4 G4 B4
+    - A4 F#4 G4 E4
+    - D#4 E4 F#4 G4
+    - F#4:2 E4:2
+    - E4 G4 B4 A4
+    - G4 F#4 D#4 E4

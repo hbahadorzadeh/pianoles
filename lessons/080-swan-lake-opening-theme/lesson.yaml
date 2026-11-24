@@ -1,0 +1,32 @@
+id: 80
+unit: Classical masterworks
+title: Swan Lake · opening theme
+instruction: Let the opening note lead into the rising line. Bring out the repeated upper notes while the bass remains
+  steady.
+tempo: 67
+meter: 4
+key: Em
+credit: Pyotr Ilyich Tchaikovsky · Swan Lake, Op. 20 · theme excerpt in E minor
+parts:
+  right:
+    - B3:4
+    - E4:2 F#4 G4
+    - A4:2 B4:2
+    - G4 B4 G4 B4
+    - E4:2 G4:2
+    - E4:4
+    - F#4:2 G4 A4
+    - B4:2 A4 G4
+    - F#4:2 D#4:2
+    - E4:4
+  left:
+    - E3:4
+    - E3:2 B3:2
+    - A2:2 E3:2
+    - E3:2 B3:2
+    - E3:2 B3:2
+    - E3:4
+    - B2:2 F#3:2
+    - E3:2 B3:2
+    - B2:2 F#3:2
+    - E3:4

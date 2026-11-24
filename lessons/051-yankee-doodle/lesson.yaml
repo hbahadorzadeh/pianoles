@@ -1,0 +1,18 @@
+id: 51
+unit: Folk tunes & songs
+title: Yankee Doodle
+instruction: Keep the opening repeated notes even, and move down to the low G with your whole hand.
+tempo: 82
+meter: 4
+key: C
+credit: Traditional Anglo-American tune · verse melody
+parts:
+  right:
+    - C4 C4 D4 E4
+    - C4 E4 D4 G3
+    - C4 C4 D4 E4
+    - C4:2 B3:2
+    - C4 C4 D4 E4
+    - F4 E4 D4 C4
+    - B3 G3 A3 B3
+    - C4:4

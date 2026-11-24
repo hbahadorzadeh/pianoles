@@ -1,0 +1,18 @@
+id: 16
+unit: Hands together
+title: Bass on beats one and three
+instruction: Keep the bass steady on beats one and three as the right hand plays different note lengths.
+tempo: 69
+meter: 4
+key: C
+parts:
+  right:
+    - C4 E4:2 G4
+    - A4 G4 F4:2
+    - D4:2 F4 E4
+    - C4:4
+  left:
+    - C3:2 G3:2
+    - F3:2 C3:2
+    - G3:2 D3:2
+    - C3:2 G3:2

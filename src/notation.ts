@@ -1,5 +1,5 @@
 import { Accidental, Beam, Dot, Formatter, Renderer, Stave, StaveConnector, StaveNote, Voice } from 'vexflow'
-import type { Event, Lesson } from './lessons'
+import { keySignatures, type Event, type Lesson } from './lessons'
 
 const durations = new Map([[0.5, '8'], [1, '4'], [1.5, '4'], [2, '2'], [3, '2'], [4, 'w']])
 
@@ -14,7 +14,7 @@ function drawNote(event: Event, clef: string, accidentals: Map<string, string>, 
   event.notes.forEach(({ spelling }, index) => {
     const position = spelling[0] + spelling.at(-1)
     const accidental = spelling.slice(1, -1) || 'n'
-    const signatureAccidental = key === 'G' && spelling[0] === 'F' ? '#' : key === 'F' && spelling[0] === 'B' ? 'b' : 'n'
+    const signatureAccidental = keySignatures[key][spelling[0]] ?? 'n'
     const previous = accidentals.get(position) ?? signatureAccidental
     if (accidental !== previous) note.addModifier(new Accidental(accidental), index)
     accidentals.set(position, accidental)

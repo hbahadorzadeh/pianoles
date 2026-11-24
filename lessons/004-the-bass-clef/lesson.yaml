@@ -1,0 +1,12 @@
+id: 4
+unit: Keyboard & notation
+title: The bass clef
+instruction: The bass clef dots surround the F line. Place left fingers 5, 4, and 3 on C, D, and E below middle
+  C.
+tempo: 58
+meter: 4
+key: C
+parts:
+  left:
+    - C3/5 D3/4 E3/3:2
+    - E3/3 D3/4 C3/5:2

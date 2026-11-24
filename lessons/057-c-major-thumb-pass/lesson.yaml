@@ -1,0 +1,14 @@
+id: 57
+unit: Keys & technique
+title: C Major Thumb Pass
+instruction: Use the thumb under your middle finger on the way up. On the way down, cross the middle finger over
+  the thumb.
+tempo: 73
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1 D4/2 E4/3 F4/1
+    - G4/2 A4/3 B4/4 C5/5
+    - C5/5 B4/4 A4/3 G4/2
+    - F4/1 E4/3 D4/2 C4/1

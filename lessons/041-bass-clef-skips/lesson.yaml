@@ -1,0 +1,14 @@
+id: 41
+unit: Rhythm & reading
+title: Bass Clef Skips
+instruction: Read the left-hand line by looking for skips. Put your little finger on C and thumb on G, and hold
+  the final C.
+tempo: 68
+meter: 4
+key: C
+parts:
+  left:
+    - C3/5 E3/3 G3/1:2
+    - F3/2 D3/4 E3/3:2
+    - C3/5 E3/3 D3/4 F3/2
+    - G3/1 E3/3 C3/5:2

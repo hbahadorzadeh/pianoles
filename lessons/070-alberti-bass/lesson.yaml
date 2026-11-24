@@ -1,0 +1,27 @@
+id: 70
+unit: Two-hand arrangements
+title: Alberti Bass
+instruction: Repeat low, high, middle, high in the left hand. Keep that pattern even under right-hand notes of different
+  lengths.
+tempo: 76
+meter: 4
+key: C
+parts:
+  right:
+    - E4:2 G4:2
+    - F4:2 A4:2
+    - D4 F4 B4:2
+    - C5:4
+    - E4 G4 C5 G4
+    - A4:2 F4:2
+    - D4 F4 E4 D4
+    - C4:4
+  left:
+    - C3 G3 E3 G3
+    - F3 C4 A3 C4
+    - G2 D3 B2 D3
+    - C3 G3 E3 G3
+    - C3 G3 E3 G3
+    - F3 C4 A3 C4
+    - G2 D3 B2 D3
+    - C3:4

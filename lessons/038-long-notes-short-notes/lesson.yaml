@@ -1,0 +1,14 @@
+id: 38
+unit: Rhythm & reading
+title: Long Notes, Short Notes
+instruction: Say one-and-two-and as you alternate short eighths with longer notes. Give the final whole note four
+  beats.
+tempo: 64
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1:0.5 D4/2:0.5 E4/3:2 D4/2
+    - E4/3:0.5 F4/4:0.5 G4/5:2 F4/4
+    - E4/3:2 D4/2:0.5 E4/3:0.5 D4/2
+    - C4/1:4

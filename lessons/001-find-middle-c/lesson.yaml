@@ -1,0 +1,12 @@
+id: 1
+unit: Keyboard & notation
+title: Find middle C
+instruction: Find a group of two black keys. Middle C is the white key immediately to the left of that group near
+  the center of a piano. Play with your right thumb.
+tempo: 56
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1:2 C4/1:2
+    - C4/1 C4/1 C4/1:2

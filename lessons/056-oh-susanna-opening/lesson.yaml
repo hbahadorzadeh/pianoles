@@ -1,0 +1,25 @@
+id: 56
+unit: Folk tunes & songs
+title: Oh! Susanna · opening
+instruction: Count the two short pickup notes. Keep the dotted notes longer than the eighth notes that follow them.
+tempo: 84
+meter: 4
+key: C
+credit: Stephen Foster · 1848 song, opening phrase
+parts:
+  right:
+    - -:3 C4:0.5 D4:0.5
+    - E4 G4 G4 A4:0.5 G4:0.5
+    - E4 C4 D4:1.5 C4:0.5
+    - D4:2 - C4:0.5 D4:0.5
+    - E4 G4 G4 A4:0.5 G4:0.5
+    - E4 C4 D4:1.5 D4:0.5
+    - C4:4
+  left:
+    - -:4
+    - C3:2 G3:2
+    - C3:2 G3:2
+    - G2:4
+    - C3:2 G3:2
+    - C3:2 G3:2
+    - C3:4

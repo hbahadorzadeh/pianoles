@@ -1,0 +1,28 @@
+id: 33
+unit: Classical & traditional studies
+title: Minuet in G · transposed to F
+instruction: Keep the first beat of each measure steady. The B-flats come from the key signature. Practice the right-hand
+  eighth notes before adding the bass.
+tempo: 76
+meter: 3
+key: F
+credit: Christian Petzold · BWV Anh. 114, opening phrase
+parts:
+  right:
+    - C5 F4:0.5 G4:0.5 A4:0.5 Bb4:0.5
+    - C5 F4 F4
+    - D5 Bb4:0.5 C5:0.5 D5:0.5 E5:0.5
+    - F5 F4 F4
+    - Bb4 C5:0.5 Bb4:0.5 A4:0.5 G4:0.5
+    - A4 Bb4:0.5 A4:0.5 G4:0.5 F4:0.5
+    - E4 F4:0.5 G4:0.5 A4:0.5 F4:0.5
+    - G4:3
+  left:
+    - F3:3
+    - F3 C3 F3
+    - Bb2:3
+    - F3 C3 F3
+    - Bb2:2 C3
+    - F3:2 A3
+    - C3:2 F3
+    - C3:3

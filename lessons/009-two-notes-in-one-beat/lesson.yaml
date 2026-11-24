@@ -1,0 +1,13 @@
+id: 9
+unit: One hand at a time
+title: Two notes in one beat
+instruction: Count “one and two and” for pairs of eighth notes. Keep both halves of the beat equally spaced.
+tempo: 70
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1:0.5 D4/2:0.5 E4/3 D4/2:0.5 E4/3:0.5 F4/4
+    - G4/5:2 E4/3:2
+    - F4/4:0.5 E4/3:0.5 D4/2 E4/3:0.5 D4/2:0.5 C4/1
+    - C4/1:4

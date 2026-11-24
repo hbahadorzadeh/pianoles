@@ -1,0 +1,14 @@
+id: 39
+unit: Rhythm & reading
+title: The Silent Beat
+instruction: Count aloud through the rests. Prepare your next key while keeping your hand off the keyboard during
+  the silence.
+tempo: 66
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1 - E4/3 G4/5
+    - G4/5:2 - E4/3
+    - F4/4:0.5 G4/5:0.5 - E4/3 D4/2
+    - C4/1:2 -:2

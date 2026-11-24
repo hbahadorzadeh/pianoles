@@ -1,0 +1,14 @@
+id: 8
+unit: One hand at a time
+title: A left-hand melody
+instruction: Put your left thumb on G and your little finger on C. Notice the descending melody moves toward finger
+  5.
+tempo: 68
+meter: 4
+key: C
+parts:
+  left:
+    - G3/1 E3/3 F3/2 G3/1
+    - E3/3:2 D3/4:2
+    - C3/5 D3/4 E3/3 D3/4
+    - C3/5:4

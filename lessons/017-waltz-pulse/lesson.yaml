@@ -1,0 +1,18 @@
+id: 17
+unit: Hands together
+title: Waltz pulse
+instruction: Count three beats per measure. Play the low first beat gently and let the two upper bass notes follow.
+tempo: 75
+meter: 3
+key: C
+parts:
+  right:
+    - E4:2 G4
+    - F4:2 A4
+    - G4 F4 D4
+    - C4:3
+  left:
+    - C3 G3 G3
+    - F3 A3 A3
+    - G3 B3 B3
+    - C3 G3 C3

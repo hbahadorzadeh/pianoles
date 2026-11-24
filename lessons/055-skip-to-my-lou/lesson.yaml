@@ -1,0 +1,27 @@
+id: 55
+unit: Folk tunes & songs
+title: Skip to My Lou
+instruction: Give the repeated notes a light touch. Keep the melody clearer than the paired bass notes.
+tempo: 82
+meter: 4
+key: C
+credit: Traditional American singing-game tune · simplified arrangement
+parts:
+  right:
+    - E4 E4 G4 G4
+    - E4 E4 C4:2
+    - D4 D4 G4 G4
+    - D4 D4 B3:2
+    - E4 E4 G4 G4
+    - E4 E4 C4:2
+    - D4 G4 E4 D4
+    - C4:4
+  left:
+    - C3:2 G3:2
+    - C3:2 G3:2
+    - G2:2 D3:2
+    - G2:2 D3:2
+    - C3:2 G3:2
+    - C3:2 G3:2
+    - G2:2 D3:2
+    - C3:4

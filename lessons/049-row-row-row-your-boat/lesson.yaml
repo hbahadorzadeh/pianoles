@@ -1,0 +1,25 @@
+id: 49
+unit: Folk tunes & songs
+title: Row, Row, Row Your Boat
+instruction: Sing the tune once, then play the long notes and the quick repeated notes evenly. This practice version
+  groups the pulse in three.
+tempo: 83
+meter: 3
+key: C
+credit: Traditional round · three-beat practice arrangement
+parts:
+  right:
+    - C4:3
+    - C4:3
+    - C4:2 D4
+    - E4:3
+    - E4:2 D4
+    - E4:2 F4
+    - G4:3
+    - C5 C5 C5
+    - G4 G4 G4
+    - E4 E4 E4
+    - C4 C4 C4
+    - G4:2 F4
+    - E4:2 D4
+    - C4:3

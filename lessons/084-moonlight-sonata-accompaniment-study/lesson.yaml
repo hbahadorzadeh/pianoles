@@ -1,0 +1,77 @@
+id: 84
+unit: Classical masterworks
+title: Moonlight Sonata · accompaniment study
+instruction: Let the bass ring under the repeated rolling figure. This version writes each broken chord as three
+  eighth notes so you can learn the hand pattern before trying triplets.
+tempo: 66
+meter: 3
+key: Am
+credit: Ludwig van Beethoven · Sonata Op. 27 No. 2 · opening texture adapted to A minor
+parts:
+  right:
+    - A3:0.5 C4:0.5 E4:0.5 A3:0.5 C4:0.5 E4:0.5
+    - A3:0.5 C4:0.5 E4:0.5 A3:0.5 C4:0.5 E4:0.5
+    - A3:0.5 C4:0.5 E4:0.5 A3:0.5 C4:0.5 E4:0.5
+    - A3:0.5 C4:0.5 F4:0.5 A3:0.5 C4:0.5 F4:0.5
+    - B3:0.5 D4:0.5 F4:0.5 B3:0.5 D4:0.5 F4:0.5
+    - G#3:0.5 B3:0.5 E4:0.5 G#3:0.5 B3:0.5 E4:0.5
+    - A3:0.5 C4:0.5 E4:0.5 A3:0.5 C4:0.5 E4:0.5
+    - A3+C4+E4:3
+  left:
+    - A2:3
+    - A2:3
+    - G2:3
+    - F2:3
+    - F2:3
+    - E2:3
+    - A2:3
+    - A2:3
+pedal:
+  - measure: 1
+    beat: 1
+    action: down
+  - measure: 1
+    beat: 3.5
+    action: up
+  - measure: 2
+    beat: 1
+    action: down
+  - measure: 2
+    beat: 3.5
+    action: up
+  - measure: 3
+    beat: 1
+    action: down
+  - measure: 3
+    beat: 3.5
+    action: up
+  - measure: 4
+    beat: 1
+    action: down
+  - measure: 4
+    beat: 3.5
+    action: up
+  - measure: 5
+    beat: 1
+    action: down
+  - measure: 5
+    beat: 3.5
+    action: up
+  - measure: 6
+    beat: 1
+    action: down
+  - measure: 6
+    beat: 3.5
+    action: up
+  - measure: 7
+    beat: 1
+    action: down
+  - measure: 7
+    beat: 3.5
+    action: up
+  - measure: 8
+    beat: 1
+    action: down
+  - measure: 8
+    beat: 3.5
+    action: up

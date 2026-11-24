@@ -3,6 +3,8 @@ export class PianoAudio {
   private output?: GainNode
   private live = new Map<number, () => void>()
   private playback?: GainNode
+  private sustain = false
+  private sustained = new Map<number, () => void>()
 
   async start(): Promise<AudioContext> {
     if (!this.context) {
@@ -50,12 +52,24 @@ export class PianoAudio {
   async press(pitch: number, velocity: number, isHeld: () => boolean): Promise<void> {
     const context = await this.start()
     if (!isHeld() || this.live.has(pitch)) return
+    this.sustained.get(pitch)?.()
+    this.sustained.delete(pitch)
     this.live.set(pitch, this.voice(pitch, context.currentTime, undefined, this.output!, velocity))
   }
 
   release(pitch: number): void {
-    this.live.get(pitch)?.()
+    const voice = this.live.get(pitch)
+    if (!voice) return
     this.live.delete(pitch)
+    if (this.sustain) this.sustained.set(pitch, voice)
+    else voice()
+  }
+
+  setSustain(down: boolean): void {
+    this.sustain = down
+    if (down) return
+    for (const voice of this.sustained.values()) voice()
+    this.sustained.clear()
   }
 
   beginPlayback(): void {

@@ -1,0 +1,13 @@
+id: 7
+unit: One hand at a time
+title: A right-hand melody
+instruction: Keep one finger per key from C through G. Aim for an even sound when the melody turns back down.
+tempo: 70
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1 D4/2 E4/3 G4/5
+    - G4/5:2 E4/3:2
+    - F4/4 E4/3 D4/2 E4/3
+    - C4/1:4

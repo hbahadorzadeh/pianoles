@@ -1,0 +1,28 @@
+id: 85
+unit: Classical masterworks
+title: Mozart Sonata K. 545 · opening study
+instruction: Let the first long note sing above the Alberti bass. Keep the left-hand eighth notes level as the right
+  hand descends.
+tempo: 76
+meter: 4
+key: F
+credit: Wolfgang Amadeus Mozart · Sonata K. 545, first movement · opening study in F with an original ending
+parts:
+  right:
+    - F4:2 A4 C5
+    - G4:1.5 A4:0.5 Bb4:0.5 A4:0.5 G4:0.5 F4:0.5
+    - E4:2 G4 Bb4
+    - A4:1.5 Bb4:0.5 C5:0.5 Bb4:0.5 A4:0.5 G4:0.5
+    - F4 A4 C5 F5
+    - E5:0.5 D5:0.5 C5:0.5 Bb4:0.5 A4:0.5 G4:0.5 F4:0.5 E4:0.5
+    - F4 A4 G4 E4
+    - F4:4
+  left:
+    - F3:0.5 C4:0.5 A3:0.5 C4:0.5 F3:0.5 C4:0.5 A3:0.5 C4:0.5
+    - C3:0.5 G3:0.5 E3:0.5 G3:0.5 C3:0.5 G3:0.5 E3:0.5 G3:0.5
+    - C3:0.5 G3:0.5 E3:0.5 G3:0.5 C3:0.5 G3:0.5 E3:0.5 G3:0.5
+    - F3:0.5 C4:0.5 A3:0.5 C4:0.5 F3:0.5 C4:0.5 A3:0.5 C4:0.5
+    - F3:0.5 C4:0.5 A3:0.5 C4:0.5 F3:0.5 C4:0.5 A3:0.5 C4:0.5
+    - C3:0.5 G3:0.5 E3:0.5 G3:0.5 C3:0.5 G3:0.5 E3:0.5 G3:0.5
+    - Bb2:2 C3:2
+    - F3:4

@@ -1,0 +1,28 @@
+id: 82
+unit: Classical masterworks
+title: In the Hall of the Mountain King
+instruction: Start softly and stay at a steady tempo. Repeat the short pattern an octave higher in the second half
+  only when your hand is ready.
+tempo: 85
+meter: 4
+key: Am
+credit: Edvard Grieg · Peer Gynt, Op. 23 · motif study transposed to A minor
+parts:
+  right:
+    - A3:0.5 B3:0.5 C4:0.5 D4:0.5 E4:0.5 C4:0.5 E4
+    - Eb4:0.5 B3:0.5 Eb4 F4:0.5 C4:0.5 F4
+    - A3:0.5 B3:0.5 C4:0.5 D4:0.5 E4:0.5 C4:0.5 E4
+    - A4:0.5 G4:0.5 E4:0.5 C4:0.5 E4:0.5 G4:0.5 A4
+    - A4:0.5 B4:0.5 C5:0.5 D5:0.5 E5:0.5 C5:0.5 E5
+    - Eb5:0.5 B4:0.5 Eb5 F5:0.5 C5:0.5 F5
+    - A4:0.5 B4:0.5 C5:0.5 D5:0.5 E5:0.5 C5:0.5 E5
+    - D5:0.5 C5:0.5 B4:0.5 A4:0.5 E4:0.5 G#4:0.5 A4
+  left:
+    - A2:2 E3:2
+    - B2:2 F3:2
+    - A2:2 E3:2
+    - A2:2 E3:2
+    - A2:2 E3:2
+    - B2:2 F3:2
+    - A2:2 E3:2
+    - A2:4

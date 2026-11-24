@@ -1,0 +1,18 @@
+id: 13
+unit: Hands together
+title: A conversation between hands
+instruction: Play each answer with the hand shown on the staff. Prepare the next hand while the other one plays.
+tempo: 64
+meter: 4
+key: C
+parts:
+  right:
+    - C4/1 D4/2 E4/3:2
+    - -:4
+    - E4/3 F4/4 G4/5:2
+    - -:4
+  left:
+    - -:4
+    - C3/5 D3/4 E3/3:2
+    - -:4
+    - G3/1 E3/3 C3/5:2

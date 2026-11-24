@@ -1,0 +1,44 @@
+id: 31
+unit: Classical & traditional studies
+title: Amazing Grace
+instruction: The first G is a pickup. Count the two silent beats before it, then keep the left-hand notes soft under
+  the sustained melody.
+tempo: 69
+meter: 3
+key: C
+credit: Traditional tune “New Britain” · published in 1835
+parts:
+  right:
+    - -:2 G3
+    - C4:2 E4:0.5 C4:0.5
+    - E4:2 D4
+    - C4:2 A3
+    - G3:2 G3
+    - C4:2 E4:0.5 C4:0.5
+    - E4:2 D4
+    - G4:2 -
+    - E4:2 G4:0.5 E4:0.5
+    - G4:2 E4
+    - C4:2 G3
+    - A3:2 C4:0.5 A3:0.5
+    - G3:2 G3
+    - C4:2 E4:0.5 C4:0.5
+    - E4:2 D4
+    - C4:3
+  left:
+    - -:3
+    - C3:3
+    - C3:3
+    - F3:3
+    - C3:3
+    - C3:3
+    - C3:2 G2
+    - G2:3
+    - C3:3
+    - C3:3
+    - C3:3
+    - F3:3
+    - C3:3
+    - C3:3
+    - G2:3
+    - C3:3

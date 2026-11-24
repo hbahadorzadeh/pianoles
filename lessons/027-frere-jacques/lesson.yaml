@@ -1,0 +1,19 @@
+id: 27
+unit: Familiar melodies
+title: Frère Jacques
+instruction: Keep the eighth notes light and even in the middle phrase. Move your thumb down to the low G for the
+  final bells.
+tempo: 72
+meter: 4
+key: C
+credit: Traditional French round
+parts:
+  right:
+    - C4 D4 E4 C4
+    - C4 D4 E4 C4
+    - E4 F4 G4:2
+    - E4 F4 G4:2
+    - G4:0.5 A4:0.5 G4:0.5 F4:0.5 E4 C4
+    - G4:0.5 A4:0.5 G4:0.5 F4:0.5 E4 C4
+    - C4 G3 C4:2
+    - C4 G3 C4:2

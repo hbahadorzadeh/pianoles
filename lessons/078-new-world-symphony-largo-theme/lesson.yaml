@@ -1,0 +1,27 @@
+id: 78
+unit: Classical masterworks
+title: New World Symphony · Largo theme
+instruction: Sing the first three notes to feel the calm phrase. Let the melody stay above the left-hand chords.
+tempo: 61
+meter: 4
+key: C
+credit: Antonín Dvořák · Symphony No. 9, Op. 95 · opening Largo theme extract in C
+parts:
+  right:
+    - E4:1.5 G4:0.5 G4:2
+    - E4:1.5 D4:0.5 C4:2
+    - D4 E4 G4 E4
+    - D4:4
+    - E4:1.5 G4:0.5 G4:2
+    - E4:1.5 D4:0.5 C4:2
+    - D4 E4 D4 C4
+    - C4:4
+  left:
+    - C3+G3:4
+    - C3+G3:4
+    - C3:2 G3:2
+    - G2+D3:4
+    - C3+G3:4
+    - C3+G3:4
+    - G2:2 D3:2
+    - C3+G3:4

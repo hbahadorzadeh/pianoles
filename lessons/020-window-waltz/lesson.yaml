@@ -1,0 +1,27 @@
+id: 20
+unit: Repertoire
+title: Window Waltz
+instruction: Let the melody stretch across the bar while the left hand keeps all three beats even. Loop measures
+  5–7 to practice the position changes.
+tempo: 90
+meter: 3
+key: C
+parts:
+  right:
+    - G4:2 E4
+    - C4 E4 G4
+    - A4:2 F4
+    - G4:3
+    - C5 B4 A4
+    - G4 E4 F4
+    - D4:2 B3
+    - C4:3
+  left:
+    - C3 E3 G3
+    - C3 E3 G3
+    - F3 A3 C4
+    - C3 E3 G3
+    - F3 A3 C4
+    - C3 E3 G3
+    - G2 B2 F3
+    - C3 G3 C4

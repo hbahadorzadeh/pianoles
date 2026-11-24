@@ -1,0 +1,13 @@
+id: 60
+unit: Keys & technique
+title: Two Sharps in D Major
+instruction: Remember both F-sharp and C-sharp. Keep your fingertips close to the keys during the thumb pass.
+tempo: 74
+meter: 4
+key: D
+parts:
+  right:
+    - D4/1 E4/2 F#4/3 G4/1
+    - A4/2 B4/3 C#5/4 D5/5
+    - D5/5 C#5/4 B4/3 A4/2
+    - G4/1 F#4/3 E4/2 D4/1

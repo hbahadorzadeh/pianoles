@@ -1,0 +1,16 @@
+id: 61
+unit: Keys & technique
+title: A Minor, Two Ways
+instruction: Compare the natural G on the way down with raised G-sharp on the way up. Hear how G-sharp pulls toward
+  A.
+tempo: 70
+meter: 4
+key: Am
+parts:
+  right:
+    - A3 B3 C4 D4
+    - E4 F4 G#4 A4
+    - A4 G4 F4 E4
+    - D4 C4 B3 A3
+    - E4 F4 G4 G#4
+    - A4:4

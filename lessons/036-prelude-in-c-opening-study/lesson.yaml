@@ -1,0 +1,28 @@
+id: 36
+unit: Classical & traditional studies
+title: Prelude in C · opening study
+instruction: Use the left hand to hold the lowest notes while the right hand plays the rolling pattern. Each pair
+  of measures practices one of the first four harmonies.
+tempo: 78
+meter: 4
+key: C
+credit: Johann Sebastian Bach · BWV 846, first four harmonies adapted
+parts:
+  right:
+    - '- G4:0.5 C5:0.5 E5:0.5 G4:0.5 C5:0.5 E5:0.5'
+    - '- G4:0.5 C5:0.5 E5:0.5 G4:0.5 C5:0.5 E5:0.5'
+    - '- A4:0.5 D5:0.5 F5:0.5 A4:0.5 D5:0.5 F5:0.5'
+    - '- A4:0.5 D5:0.5 F5:0.5 A4:0.5 D5:0.5 F5:0.5'
+    - '- G4:0.5 D5:0.5 F5:0.5 G4:0.5 D5:0.5 F5:0.5'
+    - '- G4:0.5 D5:0.5 F5:0.5 G4:0.5 D5:0.5 F5:0.5'
+    - '- G4:0.5 C5:0.5 E5:0.5 G4:0.5 C5:0.5 E5:0.5'
+    - '- G4:0.5 C5:0.5 E5:0.5 G4:0.5 C5:0.5 E5:0.5'
+  left:
+    - C4:0.5 E4:0.5 C4+E4:3
+    - C4:0.5 E4:0.5 C4+E4:3
+    - C4:0.5 D4:0.5 C4+D4:3
+    - C4:0.5 D4:0.5 C4+D4:3
+    - B3:0.5 D4:0.5 B3+D4:3
+    - B3:0.5 D4:0.5 B3+D4:3
+    - C4:0.5 E4:0.5 C4+E4:3
+    - C4:0.5 E4:0.5 C4+E4:3

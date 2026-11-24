@@ -1,0 +1,42 @@
+id: 52
+unit: Folk tunes & songs
+title: When the Saints Go Marching In
+instruction: Notice how the first three phrases start with the same leap. Keep the left-hand pulse light under the
+  tune.
+tempo: 76
+meter: 4
+key: C
+credit: Traditional American spiritual · two-hand arrangement
+parts:
+  right:
+    - C4 E4 F4 G4
+    - G4:4
+    - C4 E4 F4 G4
+    - G4:4
+    - C4 E4 F4 G4
+    - E4:2 C4:2
+    - E4:2 D4:2
+    - D4:4
+    - E4 E4 D4 C4
+    - C4:2 E4:2
+    - G4:2 G4:2
+    - G4:2 F4:2
+    - E4 F4 G4 E4
+    - C4:2 D4:2
+    - C4:4
+  left:
+    - C3:4
+    - C3:4
+    - C3:4
+    - C3:4
+    - C3:4
+    - C3:4
+    - G3:4
+    - G3:4
+    - C3:4
+    - C3:4
+    - C3:4
+    - F3:4
+    - C3:4
+    - G3:4
+    - C3:4

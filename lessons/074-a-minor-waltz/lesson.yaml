@@ -1,0 +1,27 @@
+id: 74
+unit: Two-hand arrangements
+title: A Minor Waltz
+instruction: Keep the melody legato while the left hand outlines the chords. Listen for the G-sharp in the dominant
+  harmony.
+tempo: 78
+meter: 3
+key: Am
+parts:
+  right:
+    - C5:2 B4
+    - A4 C5 E5
+    - D5:2 B4
+    - C5 A4 E4
+    - F4:2 A4
+    - G#4 B4 E5
+    - D5:2 G#4
+    - A4:3
+  left:
+    - A2 E3 C3
+    - A2 E3 C3
+    - E3 B3 G#3
+    - A2 E3 C3
+    - F3 C4 A3
+    - E3 B3 G#3
+    - E3 B3 G#3
+    - A2:3

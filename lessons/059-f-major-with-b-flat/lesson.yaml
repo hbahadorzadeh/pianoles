@@ -1,0 +1,14 @@
+id: 59
+unit: Keys & technique
+title: F Major With B-flat
+instruction: Use finger four on B-flat, then pass the thumb under to C. Play slowly enough to keep the movement
+  smooth.
+tempo: 72
+meter: 4
+key: F
+parts:
+  right:
+    - F3/1 G3/2 A3/3 Bb3/4
+    - C4/1 D4/2 E4/3 F4/4
+    - F4/4 E4/3 D4/2 C4/1
+    - Bb3/4 A3/3 G3/2 F3/1

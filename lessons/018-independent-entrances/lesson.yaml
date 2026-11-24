@@ -1,0 +1,18 @@
+id: 18
+unit: Hands together
+title: Independent entrances
+instruction: Count through each rest and keep listening for the next entrance. Try each hand before combining them.
+tempo: 74
+meter: 4
+key: C
+parts:
+  right:
+    - '- E4 G4:2'
+    - A4:2 - G4
+    - F4 E4:2 D4
+    - C4:4
+  left:
+    - C3:2 - G3
+    - F3 - C3:2
+    - G3 A3 B3:2
+    - C3:4

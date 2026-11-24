@@ -1,0 +1,16 @@
+id: 64
+unit: Keys & technique
+title: Chromatic Neighbours
+instruction: Compare a sharp note with the natural sign that cancels it. Keep the short black-key notes close to
+  the surrounding white keys.
+tempo: 69
+meter: 4
+key: C
+parts:
+  right:
+    - C4 C#4 D4 C4
+    - E4 F4 F#4 F4
+    - G4 G#4 A4 G4
+    - B4 Bb4 A4 G4
+    - F#4 F4 E4 D4
+    - Db4 C4 C4:2

@@ -1,0 +1,27 @@
+id: 71
+unit: Two-hand arrangements
+title: A Duet in Contrary Motion
+instruction: Notice when the two lines move away from each other and when they return. Practice each line until
+  you can hum it independently.
+tempo: 72
+meter: 4
+key: C
+parts:
+  right:
+    - C4 D4 E4 F4
+    - G4 A4 G4:2
+    - F4 E4 D4:2
+    - C4:4
+    - E4:2 F4 G4
+    - A4 G4 F4 E4
+    - D4:2 E4 D4
+    - C4:4
+  left:
+    - C3 B2 A2 G2
+    - F2 E2 F2:2
+    - G2 A2 B2:2
+    - C3:4
+    - A2:2 G2 F2
+    - E2 F2 G2 A2
+    - B2:2 G2 B2
+    - C3:4

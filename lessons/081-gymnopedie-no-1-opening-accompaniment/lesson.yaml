@@ -1,0 +1,68 @@
+id: 81
+unit: Classical masterworks
+title: Gymnopédie No. 1 · opening accompaniment
+instruction: Play low bass notes softly and let the chord ring. Lift the pedal before alternating between G major
+  seventh and D major seventh.
+tempo: 59
+meter: 3
+key: D
+credit: Erik Satie · Gymnopédie No. 1, 1888 · opening accompaniment study
+parts:
+  left:
+    - G2 B3+D4+F#4:2
+    - D3 A3+C#4+F#4:2
+    - G2 B3+D4+F#4:2
+    - D3 A3+C#4+F#4:2
+    - G2 B3+D4+F#4:2
+    - D3 A3+C#4+F#4:2
+    - G2 B3+D4+F#4:2
+    - D3 A3+C#4+F#4:2
+pedal:
+  - measure: 1
+    beat: 1
+    action: down
+  - measure: 1
+    beat: 3.5
+    action: up
+  - measure: 2
+    beat: 1
+    action: down
+  - measure: 2
+    beat: 3.5
+    action: up
+  - measure: 3
+    beat: 1
+    action: down
+  - measure: 3
+    beat: 3.5
+    action: up
+  - measure: 4
+    beat: 1
+    action: down
+  - measure: 4
+    beat: 3.5
+    action: up
+  - measure: 5
+    beat: 1
+    action: down
+  - measure: 5
+    beat: 3.5
+    action: up
+  - measure: 6
+    beat: 1
+    action: down
+  - measure: 6
+    beat: 3.5
+    action: up
+  - measure: 7
+    beat: 1
+    action: down
+  - measure: 7
+    beat: 3.5
+    action: up
+  - measure: 8
+    beat: 1
+    action: down
+  - measure: 8
+    beat: 3.5
+    action: up

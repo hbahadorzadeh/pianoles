@@ -1,0 +1,30 @@
+id: 54
+unit: Folk tunes & songs
+title: Auld Lang Syne
+instruction: The first G is a pickup. Hold through the longer notes, and let the left hand lead softly into each
+  new phrase.
+tempo: 72
+meter: 4
+key: C
+credit: Traditional Scottish melody · verse arrangement
+parts:
+  right:
+    - -:3 G3
+    - C4:2 C4 E4
+    - D4:2 C4 D4
+    - E4:2 C4 E4
+    - G4:3 A4
+    - A4:2 G4 E4
+    - E4:2 C4 D4
+    - E4:2 C4 D4
+    - C4:4
+  left:
+    - -:4
+    - C3:4
+    - G2:4
+    - C3:4
+    - C3:4
+    - F3:4
+    - C3:4
+    - G2:4
+    - C3:4
