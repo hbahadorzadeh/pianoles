@@ -1,3 +1,5 @@
+import { classicalStudies, familiarMelodies } from './repertoire'
+
 export type Hand = 'left' | 'right'
 export type Hands = Hand | 'both'
 export type Note = { midi: number; spelling: string }
@@ -12,9 +14,8 @@ export type Lesson = {
   measures: number
   hands: Hand[]
   events: Event[]
+  credit?: string
 }
-
-export const units = ['Keyboard & notation', 'One hand at a time', 'Hands together', 'Repertoire']
 
 const semitones: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }
 
@@ -44,7 +45,7 @@ function readPart(part: string, hand: Hand, meter: number): Event[] {
   })
 }
 
-type Exercise = [title: string, instruction: string, tempo: number, right: string, left?: string, meter?: number, key?: string]
+export type Exercise = [title: string, instruction: string, tempo: number, right: string, left?: string, meter?: number, key?: string, credit?: string]
 
 const course: Exercise[] = [
   ['Find middle C', 'Find a group of two black keys. Middle C is the white key immediately to the left of that group near the center of a piano. Play with your right thumb.', 56, 'C4:2 C4:2|C4 C4 C4:2'],
@@ -73,14 +74,29 @@ const course: Exercise[] = [
   ['Evening Duet', 'Give each hand its own musical shape. Work in four-measure phrases and bring the tempo up after each phrase feels steady.', 88, 'E4 G4:0.5 A4:0.5 C5:2|B4:1.5 A4:0.5 G4 E4|F4 A4 C5:0.5 D5:0.5 E5|D5:2 B4:2|C5 E5:0.5 D5:0.5 C5 A4|B4:1.5 C5:0.5 D5 F5|E5:2 D5:0.5 C5:0.5 B4|C5:4|A4+C5:2 D5 E5|G4+B4:2 F5 E5|D5:0.5 C5:0.5 B4 A4 G4|C5+E5:4', 'C3:2 E3 G3|E3:0.5 F3:0.5 G3:1.5 E3:0.5 D3|F3:2 A3 C4|G3:0.5 F3:0.5 E3 D3 G2|A2 E3:2 C4|G2 D3:0.5 E3:0.5 F3:2|C3:2 G2 B2|C3:2 E3:0.5 F3:0.5 G3|F3 C4:2 A3|G2:2 D3 F3|G3:0.5 F3:0.5 E3 D3 B2|C3+G3:4'],
 ]
 
-export const lessons: Lesson[] = course.map(([title, instruction, tempo, right, left, meter = 4, key = 'C'], index) => {
+function createLesson([title, instruction, tempo, right, left, meter = 4, key = 'C', credit]: Exercise, id: number): Lesson {
   const hands: Hand[] = []
   if (right) hands.push('right')
   if (left) hands.push('left')
   const measures = (right || left || '').split('|').length
   if (right && left && right.split('|').length !== left.split('|').length) throw new Error(`Uneven parts: ${title}`)
   return {
-    id: index + 1, title, instruction, tempo, meter, key, measures, hands,
+    id, title, instruction, tempo, meter, key, measures, hands, credit,
     events: [...(right ? readPart(right, 'right', meter) : []), ...(left ? readPart(left, 'left', meter) : [])],
   }
-})
+}
+
+const sections = [
+  { title: 'Keyboard & notation', exercises: course.slice(0, 6) },
+  { title: 'One hand at a time', exercises: course.slice(6, 12) },
+  { title: 'Hands together', exercises: course.slice(12, 18) },
+  { title: 'Repertoire', exercises: course.slice(18) },
+  { title: 'Familiar melodies', exercises: familiarMelodies },
+  { title: 'Classical & traditional studies', exercises: classicalStudies },
+]
+let nextId = 1
+export const units = sections.map(({ title, exercises }) => ({
+  title,
+  lessons: exercises.map(exercise => createLesson(exercise, nextId++)),
+}))
+export const lessons = units.flatMap(unit => unit.lessons)

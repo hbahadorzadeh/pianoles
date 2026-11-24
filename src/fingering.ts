@@ -8,8 +8,12 @@ const chromatic: readonly Finger[][] = [[1, 3, 2, 3], [1, 2, 3, 4], [5, 4, 3, 2]
 
 export const lastLessonWithFingerings = 15
 
+export function hasFingerings(id: number): boolean {
+  return id <= lastLessonWithFingerings || id === 25 || id === 29 || id === 30
+}
+
 export function fingerFor(lesson: Lesson, event: Event, spelling: string): Finger | undefined {
-  if (lesson.id > lastLessonWithFingerings) return
+  if (!hasFingerings(lesson.id)) return
   const measure = Math.floor(event.beat / lesson.meter)
   if (event.hand === 'left') return (cLeft as Record<string, Finger>)[spelling]
   if (lesson.id === 10) return chromatic[measure]?.[event.beat % lesson.meter]
