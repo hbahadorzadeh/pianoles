@@ -12,6 +12,6 @@
 
 ## 3. Verification and release
 
-- [ ] 3.1 Verify lesson data and practice behavior with automated tests and browser checks.
+- [x] 3.1 Verify lesson data and practice behavior with automated tests and browser checks.
 - [ ] 3.2 Publish through GitHub Pages and verify a live deep link and progress reload.
 - [ ] 3.3 Validate and archive the OpenSpec change.

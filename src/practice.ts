@@ -23,14 +23,23 @@ export function scoreAttempt(steps: Step[], hits: Hit[], secondsPerBeat: number)
   if (!expected.length) return { pitch: 0, timing: 0 }
   const orderedHits = [...hits].sort((a, b) => a.beat - b.beat)
   const used = new Set<number>()
-  let correct = 0
+  const missed: typeof expected = []
   let onTime = 0
   for (const note of expected) {
+    const index = orderedHits.findIndex((hit, i) => hit.pitch === note.pitch && !used.has(i) &&
+      Math.abs(hit.beat - note.beat) * secondsPerBeat <= 0.18)
+    if (index === -1) missed.push(note)
+    else {
+      used.add(index)
+      onTime++
+    }
+  }
+  let correct = onTime
+  for (const note of missed) {
     const index = orderedHits.findIndex((hit, i) => hit.pitch === note.pitch && !used.has(i))
     if (index === -1) continue
     used.add(index)
     correct++
-    if (Math.abs(orderedHits[index].beat - note.beat) * secondsPerBeat <= 0.18) onTime++
   }
   const denominator = expected.length + hits.length - correct
   return { pitch: Math.round(100 * correct / denominator), timing: Math.round(100 * onTime / denominator) }

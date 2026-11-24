@@ -113,36 +113,44 @@ function press(source: string, pitch: number, velocity = 0.72): void {
     if (elapsed >= -0.18) timed.hits.push({ pitch, beat: elapsed / timed.secondsPerBeat })
   }
   if (guided) {
-    const step = guided[stepIndex]
     freshChord.add(pitch)
-    if (!step.pitches.has(pitch)) {
-      status('That pitch is outside the highlighted note group. Release it and try again.')
-    } else if (matchesChord(step.pitches, freshChord)) {
-      freshChord.clear()
-      stepIndex++
-      if (stepIndex === guided.length) {
-        if (settings().loop) {
-          stepIndex = 0
-          status('Passage complete. Release the keys and repeat.')
-          showGuidedStep()
-        } else {
-          if (settings().full) {
-            progress.completed[lesson.id] = true
-            saveProgress(progress)
-            updateSidebar()
-          }
-          stop()
-          status(settings().full ? 'Lesson complete. You can replay it or try timed practice.' : 'Practice complete.')
-        }
-      } else {
-        status(`Correct · ${stepIndex} of ${guided.length} note groups`)
-        showGuidedStep()
-      }
-    } else {
-      status('Play the highlighted notes together.')
-    }
+    checkGuided()
   }
   refreshKeys()
+}
+
+function checkGuided(): void {
+  if (!guided) return
+  const step = guided[stepIndex]
+  if ([...freshChord].some(pitch => !step.pitches.has(pitch))) {
+    status('That pitch is outside the highlighted note group. Release it and try again.')
+    return
+  }
+  if (!matchesChord(step.pitches, freshChord)) {
+    status('Play the highlighted note or chord to continue.')
+    return
+  }
+  freshChord.clear()
+  stepIndex++
+  if (stepIndex < guided.length) {
+    status(`Correct · ${stepIndex} of ${guided.length} note groups`)
+    showGuidedStep()
+    return
+  }
+  const { loop, full } = settings()
+  if (loop) {
+    stepIndex = 0
+    status('Passage complete. Release the keys and repeat.')
+    showGuidedStep()
+    return
+  }
+  if (full) {
+    progress.completed[lesson.id] = true
+    saveProgress(progress)
+    updateSidebar()
+  }
+  stop()
+  status(full ? 'Lesson complete. You can replay it or try timed practice.' : 'Practice complete.')
 }
 
 function release(source: string): void {
@@ -151,8 +159,9 @@ function release(source: string): void {
   held.delete(source)
   if (![...held.values()].includes(pitch)) {
     pressed.delete(pitch)
-    freshChord.delete(pitch)
+    const releasedWrongNote = freshChord.delete(pitch) && !guided?.[stepIndex].pitches.has(pitch)
     audio.release(pitch)
+    if (releasedWrongNote && freshChord.size) checkGuided()
   }
   refreshKeys()
 }

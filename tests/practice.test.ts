@@ -41,3 +41,9 @@ test('timed scoring distinguishes wrong pitch, timing and extra strikes', () => 
   ], 1), { pitch: 75, timing: 50 })
   assert.deepEqual(scoreAttempt(steps, [], 1), { pitch: 0, timing: 0 })
 })
+
+test('a stray early repeat does not displace later on-time strikes', () => {
+  const steps = [{ beat: 1, pitches: new Set([60]) }, { beat: 2, pitches: new Set([60]) }]
+  const hits = [{ pitch: 60, beat: 0.5 }, { pitch: 60, beat: 1 }, { pitch: 60, beat: 2 }]
+  assert.deepEqual(scoreAttempt(steps, hits, 1), { pitch: 67, timing: 67 })
+})
