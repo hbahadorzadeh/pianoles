@@ -19,7 +19,7 @@ Open the Vite URL under `/pianoles/`. Run `npm test` for the curriculum and prac
 - Share a specific lesson with a URL such as `/pianoles/#/lesson/18`.
 
 - Use **Beat & duration** to see how long notes and rests last. The playhead moves during timed practice and demonstrations.
-- Turn on **Kids mode** for large icons, slower demonstrations that lead into guided play, and separate progress. Matching colors and numbers on the hand diagram and keyboard suggest fingering in lessons 1–15.
+- Turn on **Kids mode** for large icons, slower demonstrations that lead into guided play, and separate progress. Matching colored fingertips on the hand diagram and keyboard suggest fingering in lessons 1–15.
 
 ## Publish
 

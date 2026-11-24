@@ -66,7 +66,10 @@ export function renderScore(container: HTMLElement, lesson: Lesson): void {
       beams.forEach(beam => beam.setContext(context).draw())
       notes.forEach((note, index) => {
         const element = note.getSVGElement()
-        if (element) element.dataset.beat = String(events[index].beat)
+        if (element) {
+          element.dataset.beat = String(events[index].beat)
+          element.dataset.hand = events[index].hand
+        }
       })
     })
     const svg = score.querySelector('svg')!

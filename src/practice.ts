@@ -16,6 +16,26 @@ export function practiceSteps(lesson: Lesson, hands: Hands, first: number, last:
   return [...steps.values()].sort((a, b) => a.beat - b.beat)
 }
 
+export const timingTolerance = 0.18
+export const timingFeedbackWindow = 0.45
+export type TimingFeedback = 'early' | 'on-beat' | 'late'
+
+export function matchTiming(
+  steps: Step[], hit: Hit, secondsPerBeat: number, claimed: ReadonlySet<number>,
+): { beat: number; feedback: TimingFeedback; difference: number } | undefined {
+  let closest: { beat: number; difference: number } | undefined
+  for (const step of steps) {
+    if (claimed.has(step.beat) || !step.pitches.has(hit.pitch)) continue
+    const difference = (hit.beat - step.beat) * secondsPerBeat
+    if (Math.abs(difference) > timingFeedbackWindow) continue
+    if (!closest || Math.abs(difference) < Math.abs(closest.difference)) closest = { beat: step.beat, difference }
+  }
+  if (!closest) return
+  const { difference } = closest
+  const feedback = Math.abs(difference) <= timingTolerance ? 'on-beat' : difference < 0 ? 'early' : 'late'
+  return { ...closest, feedback }
+}
+
 export type Hit = { pitch: number; beat: number }
 
 export function scoreAttempt(steps: Step[], hits: Hit[], secondsPerBeat: number): Scores {
@@ -27,7 +47,7 @@ export function scoreAttempt(steps: Step[], hits: Hit[], secondsPerBeat: number)
   let onTime = 0
   for (const note of expected) {
     const index = orderedHits.findIndex((hit, i) => hit.pitch === note.pitch && !used.has(i) &&
-      Math.abs(hit.beat - note.beat) * secondsPerBeat <= 0.18)
+      Math.abs(hit.beat - note.beat) * secondsPerBeat <= timingTolerance)
     if (index === -1) missed.push(note)
     else {
       used.add(index)

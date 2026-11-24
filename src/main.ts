@@ -2,7 +2,7 @@ import './style.css'
 import { PianoAudio } from './audio'
 import { lessons, units, type Event, type Hands, type Lesson } from './lessons'
 import { renderScore } from './notation'
-import { matchesChord, practiceSteps, scoreAttempt, type Hit, type Step } from './practice'
+import { matchTiming, matchesChord, practiceSteps, scoreAttempt, timingFeedbackWindow, timingTolerance, type Hit, type Step } from './practice'
 import { loadProgress, readKidsMode, saveKidsMode, saveProgress } from './progress'
 import { RhythmDisplay } from './rhythm'
 import { fingerFor, handDiagram, lastLessonWithFingerings } from './fingering'
@@ -27,7 +27,16 @@ const keyRows = [
 let lesson: Lesson
 let guided: Step[] | undefined
 let stepIndex = 0
-let timed: { start: number; secondsPerBeat: number; hits: Hit[]; context: AudioContext } | undefined
+let timed: {
+  start: number
+  secondsPerBeat: number
+  hits: Hit[]
+  context: AudioContext
+  steps: Step[]
+  claimed: Map<number, Set<number>>
+  hands: Hands
+  offset: number
+} | undefined
 let active = false
 let generation = 0
 let animation = 0
@@ -90,7 +99,7 @@ function kidsCue(cue: 'ready' | 'play' | 'listen' | 'correct' | 'retry' | 'done'
   indicator.dataset.cue = cue
 }
 
-function highlight(beat: number): void {
+function highlight(beat: number, sounding?: Event[]): void {
   if (highlighted === beat) return
   highlighted = beat
   document.querySelectorAll('.current-note,.current-measure').forEach(node => node.classList.remove('current-note', 'current-measure'))
@@ -98,10 +107,13 @@ function highlight(beat: number): void {
   const measure = Math.floor(beat / lesson.meter) + 1
   const cell = document.querySelector<HTMLElement>(`[data-measure="${measure}"]`)
   cell?.classList.add('current-measure')
-  cell?.querySelectorAll(`[data-beat="${beat}"]`).forEach(node => node.classList.add('current-note'))
+  const selectors = sounding
+    ? sounding.map(event => `[data-beat="${event.beat}"][data-hand="${event.hand}"]`)
+    : [`[data-beat="${beat}"]`]
+  if (selectors.length) cell?.querySelectorAll(selectors.join(',')).forEach(node => node.classList.add('current-note'))
   const strip = element('score')
   if (cell && (cell.offsetLeft < strip.scrollLeft || cell.offsetLeft + cell.offsetWidth > strip.scrollLeft + strip.clientWidth)) {
-    strip.scrollTo({ left: cell.offsetLeft, behavior: 'smooth' })
+    strip.scrollTo({ left: cell.offsetLeft, behavior: kidsMode ? 'instant' : 'smooth' })
   }
 }
 
@@ -152,7 +164,17 @@ function press(source: string, pitch: number, velocity = 0.72): void {
   })
   if (timed) {
     const elapsed = timed.context.currentTime - timed.start
-    if (elapsed >= -0.18) timed.hits.push({ pitch, beat: elapsed / timed.secondsPerBeat })
+    const hit = { pitch, beat: elapsed / timed.secondsPerBeat }
+    if (elapsed >= -timingTolerance) timed.hits.push(hit)
+    if (elapsed >= -timingFeedbackWindow) {
+      const claimed = timed.claimed.get(pitch) ?? new Set()
+      const match = matchTiming(timed.steps, hit, timed.secondsPerBeat, claimed)
+      if (match) {
+        claimed.add(match.beat)
+        timed.claimed.set(pitch, claimed)
+        rhythm?.recordTiming(timed.hands, match.beat + timed.offset, pitch, match.feedback, match.difference)
+      }
+    }
   }
   if (guided) {
     freshChord.add(pitch)
@@ -279,7 +301,10 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
   }
 
   schedule(roundStart)
-  if (mode === 'timed') timed = { context, secondsPerBeat, start: firstBeat, hits: [] }
+  if (mode === 'timed') {
+    timed = { context, secondsPerBeat, start: firstBeat, hits: [], steps, hands, offset, claimed: new Map() }
+    rhythm?.clearTiming(true)
+  }
 
   function tick(): void {
     if (session !== generation) return
@@ -290,14 +315,13 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
     } else if (position < duration) {
       rhythm?.show(hands, offset + position)
       const beat = Math.floor(position * 2) / 2
-      highlight(offset + beat)
       if (beat !== lastHintBeat) {
         lastHintBeat = beat
         const pitches = new Set<number>()
-        for (const event of events) {
-          if (event.beat <= offset + beat && offset + beat < event.beat + event.duration) {
-            for (const note of event.notes) pitches.add(note.midi)
-          }
+        const sounding = events.filter(event => event.beat <= offset + beat && offset + beat < event.beat + event.duration)
+        highlight(offset + beat, sounding)
+        for (const event of sounding) {
+          for (const note of event.notes) pitches.add(note.midi)
         }
         setHintPitches(pitches)
       }
@@ -317,6 +341,8 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
         if (timed) {
           timed.start = roundStart
           timed.hits = []
+          timed.claimed.clear()
+          rhythm?.clearTiming(true)
           if (scores) element('result').textContent = `Last loop · ${scores.pitch}% pitch · ${scores.timing}% timing`
         }
       } else {
@@ -352,7 +378,7 @@ function renderFingering(events: Event[]): void {
     diagram.querySelectorAll('.finger.active').forEach(node => node.classList.remove('active'))
   })
   keys.forEach(key => {
-    delete key.dataset.finger
+    key.querySelector('.key-finger')?.remove()
     key.removeAttribute('aria-description')
   })
   if (enabled) {
@@ -364,7 +390,10 @@ function renderFingering(events: Event[]): void {
         diagram.querySelector(`[data-finger="${finger}"]`)?.classList.add('active')
         const key = keys.get(note.midi)
         if (key) {
-          key.dataset.finger = String(finger)
+          const marker = document.createElement('span')
+          marker.className = `finger finger-${finger} key-finger active`
+          marker.setAttribute('aria-hidden', 'true')
+          key.append(marker)
           key.setAttribute('aria-description', `Suggested finger: ${event.hand} hand ${finger}`)
         }
       }

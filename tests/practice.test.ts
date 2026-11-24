@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { lessons } from '../src/lessons'
-import { matchesChord, practiceSteps, scoreAttempt } from '../src/practice'
+import { matchTiming, matchesChord, practiceSteps, scoreAttempt } from '../src/practice'
 
 test('curriculum has 24 ordered, complete lessons within the playable keyboard', () => {
   assert.deepEqual(lessons.map(lesson => lesson.id), Array.from({ length: 24 }, (_, i) => i + 1))
@@ -46,4 +46,21 @@ test('a stray early repeat does not displace later on-time strikes', () => {
   const steps = [{ beat: 1, pitches: new Set([60]) }, { beat: 2, pitches: new Set([60]) }]
   const hits = [{ pitch: 60, beat: 0.5 }, { pitch: 60, beat: 1 }, { pitch: 60, beat: 2 }]
   assert.deepEqual(scoreAttempt(steps, hits, 1), { pitch: 67, timing: 67 })
+})
+
+
+test('live timing distinguishes early, on-beat and late hits and ignores unrelated notes', () => {
+  const steps = [
+    { beat: 0, pitches: new Set([60, 64]) },
+    { beat: 1, pitches: new Set([60]) },
+  ]
+  const claimed = new Set<number>()
+  assert.equal(matchTiming(steps, { pitch: 60, beat: -0.25 }, 1, claimed)?.feedback, 'early')
+  assert.equal(matchTiming(steps, { pitch: 60, beat: 0.1 }, 1, claimed)?.feedback, 'on-beat')
+  assert.equal(matchTiming(steps, { pitch: 64, beat: 0.24 }, 1, claimed)?.feedback, 'late')
+  assert.equal(matchTiming(steps, { pitch: 61, beat: 0 }, 1, claimed), undefined)
+  claimed.add(0)
+  assert.equal(matchTiming(steps, { pitch: 60, beat: 0.22 }, 1, claimed), undefined)
+  assert.equal(matchTiming(steps, { pitch: 60, beat: 0.75 }, 1, claimed)?.beat, 1)
+  assert.equal(matchTiming(steps, { pitch: 60, beat: 0.75 }, 0.5, claimed)?.feedback, 'on-beat')
 })
