@@ -36,7 +36,7 @@ The app SHALL highlight the keys to play when hints are enabled. Guided hints SH
 - **THEN** the keyboard clears its hints immediately and playback continues
 
 ### Requirement: Visual beat and duration
-The app SHALL draw note and rest lengths proportionally against beat markers, with a lane per selected hand. In timed practice and demonstrations, the cursor and each bar's fill SHALL follow the audio clock. In guided practice, the cursor SHALL follow the current position.
+The app SHALL draw note and rest lengths proportionally against beat markers, with a lane per selected hand. In timed practice and demonstrations, the cursor and each bar's fill SHALL follow the audio clock. In guided practice, the cursor SHALL follow the current position and the note bars SHALL fill at the selected tempo while the app waits for input.
 
 #### Scenario: Contrast note lengths
 - **WHEN** a learner compares a one-beat note and a two-beat note
@@ -57,12 +57,16 @@ The app SHALL offer Kids mode with large icon controls, slower demonstrations, k
 - **WHEN** guided practice reaches a new measure in Kids mode
 - **THEN** the score brings that measure into view and highlights the note to play
 
+#### Scenario: Practice to the beat in Kids mode
+- **WHEN** the learner presses the clock control in Kids mode
+- **THEN** timed practice starts and shows early, on-beat, and late feedback for matched strikes
+
 ### Requirement: Suggested fingering
-The app SHALL show authored finger suggestions in lessons 1–15 with corresponding shapes and colors on the hand diagram and at the bottom of the piano keys.
+The app SHALL show authored finger suggestions in lessons 1–15 with whole hand diagrams that move beneath the target keys, with matching colors on the active fingertips and keys.
 
 #### Scenario: Use the right thumb for middle C
 - **WHEN** the learner starts guided practice in lesson 1 with finger hints enabled
-- **THEN** the right hand's thumb and middle C show matching thumb shapes
+- **THEN** the right hand moves below middle C and its thumb matches the accent on the key
 
 ### Requirement: Live timing feedback
 In timed practice the app SHALL show whether a matched strike came early, on the beat, or late. Early strikes SHALL use blue and late strikes SHALL use red. Each color cue SHALL have a text label.

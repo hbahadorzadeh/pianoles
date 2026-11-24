@@ -112,6 +112,17 @@ export class RhythmDisplay {
     this.feedback.hidden = false
   }
 
+  guideDuration(beat: number, elapsedBeats: number): boolean {
+    let filling = false
+    for (const { event, fill } of this.blocks) {
+      if (event.beat !== beat || !event.notes.length) continue
+      const fraction = Math.min(1, elapsedBeats / event.duration)
+      fill.style.transform = `scaleX(${fraction})`
+      filling ||= fraction < 1
+    }
+    return filling
+  }
+
   countIn(position: number): void {
     this.pulse(position < 0 ? -1 : Math.floor(position) % this.lesson.meter)
   }

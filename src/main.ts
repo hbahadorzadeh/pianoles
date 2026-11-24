@@ -120,9 +120,19 @@ function highlight(beat: number, sounding?: Event[]): void {
 function showGuidedStep(): void {
   const step = guided?.[stepIndex]
   if (!step) return
-  highlight(step.beat + pitchOffset)
+  const beat = step.beat + pitchOffset
+  const { hands, bpm } = settings()
+  highlight(beat)
   setHintPitches(step.pitches)
-  rhythm?.show(settings().hands, step.beat + pitchOffset, true)
+  rhythm?.show(hands, beat, true)
+
+  cancelAnimationFrame(animation)
+  const started = performance.now()
+  function fill(time: number): void {
+    const elapsedBeats = Math.max(0, (time - started) * bpm / 60_000)
+    if (rhythm?.guideDuration(beat, elapsedBeats)) animation = requestAnimationFrame(fill)
+  }
+  animation = requestAnimationFrame(fill)
 }
 
 function setHintPitches(pitches: ReadonlySet<number>): void {
@@ -288,6 +298,7 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
   let roundStart = firstBeat
   let nextRoundScheduled = false
   let lastHintBeat = -1
+  let startedPlaying = false
   for (let i = count; i > 0; i--) audio.click(firstBeat - i * secondsPerBeat, i === count)
 
   function schedule(at: number): void {
@@ -313,6 +324,10 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
       rhythm?.countIn(position + count)
       status(`Get ready · ${Math.min(count, Math.ceil(-position))}`.replace(/ · 0$/, ''))
     } else if (position < duration) {
+      if (!startedPlaying) {
+        startedPlaying = true
+        if (mode === 'timed') kidsCue('play')
+      }
       rhythm?.show(hands, offset + position)
       const beat = Math.floor(position * 2) / 2
       if (beat !== lastHintBeat) {
@@ -378,7 +393,7 @@ function renderFingering(events: Event[]): void {
     diagram.querySelectorAll('.finger.active').forEach(node => node.classList.remove('active'))
   })
   keys.forEach(key => {
-    key.querySelector('.key-finger')?.remove()
+    delete key.dataset.fingerTarget
     key.removeAttribute('aria-description')
   })
   if (enabled) {
@@ -390,16 +405,55 @@ function renderFingering(events: Event[]): void {
         diagram.querySelector(`[data-finger="${finger}"]`)?.classList.add('active')
         const key = keys.get(note.midi)
         if (key) {
-          const marker = document.createElement('span')
-          marker.className = `finger finger-${finger} key-finger active`
-          marker.setAttribute('aria-hidden', 'true')
-          key.append(marker)
+          key.dataset.fingerTarget = String(finger)
           key.setAttribute('aria-description', `Suggested finger: ${event.hand} hand ${finger}`)
         }
       }
     }
   }
   panel.hidden = !enabled
+  positionHands()
+}
+
+function positionHands(): void {
+  const panel = element('fingering')
+  if (panel.hidden) return
+  const viewport = panel.getBoundingClientRect()
+  const hands = [...panel.querySelectorAll<HTMLElement>('.finger-hand:not([hidden])')]
+  const placements = hands.map(hand => {
+    const origin = hand.getBoundingClientRect().left
+    const targets: number[] = []
+    for (const event of fingerEvents) {
+      if (event.hand !== hand.dataset.hand) continue
+      for (const note of event.notes) {
+        const finger = fingerFor(lesson, event, note.spelling)
+        const tip = hand.querySelector<HTMLElement>(`[data-finger="${finger}"]`)
+        const key = keys.get(note.midi)
+        if (!tip || !key) continue
+        const fingertip = tip.getBoundingClientRect()
+        const keyBounds = key.getBoundingClientRect()
+        const keyCenter = keyBounds.left + keyBounds.width / 2 - viewport.left
+        targets.push(keyCenter - (fingertip.left - origin + fingertip.width / 2))
+      }
+    }
+    const preferred = targets.length ? targets.reduce((sum, target) => sum + target, 0) / targets.length : hand.offsetLeft
+    const width = hand.offsetWidth
+    const left = Math.max(0, Math.min(viewport.width - width, preferred))
+    return { hand, left, width, targeted: targets.length > 0 }
+  })
+  if (placements.length === 2) {
+    const left = placements.find(item => item.hand.dataset.hand === 'left')!
+    const right = placements.find(item => item.hand.dataset.hand === 'right')!
+    const gap = 5
+    if (left.left + left.width + gap > right.left) {
+      if (left.targeted || !right.targeted) right.left = Math.min(viewport.width - right.width, left.left + left.width + gap)
+      left.left = Math.max(0, Math.min(left.left, right.left - left.width - gap))
+      right.left = Math.max(right.left, left.left + left.width + gap)
+    }
+  }
+  for (const { hand, left } of placements) {
+    hand.style.setProperty('--hand-shift', `${left - hand.offsetLeft}px`)
+  }
 }
 
 function makeKeyboard(): void {
@@ -629,7 +683,7 @@ function display(): void {
         <section class="studio" aria-label="Practice studio">
           <div class="studio-toolbar">
             <div class="play-controls">
-              <button class="primary" id="guided" aria-label="Start guided"><span class="kid-icon" aria-hidden="true">▶&#xfe0e;</span><span class="adult-label">Start guided</span></button><button id="timed">Timed practice</button><button id="demo" aria-label="Listen"><span class="kid-icon" aria-hidden="true">♫</span><span class="adult-label"><span aria-hidden="true">▷</span> Listen</span></button><button id="stop" aria-label="Stop" disabled><span class="kid-icon" aria-hidden="true">■</span><span class="adult-label">Stop</span></button>
+              <button class="primary" id="guided" aria-label="Start guided"><span class="kid-icon" aria-hidden="true">▶&#xfe0e;</span><span class="adult-label">Start guided</span></button><button id="timed" aria-label="Timed practice" title="Timed practice"><span class="kid-icon" aria-hidden="true">◷</span><span class="adult-label">Timed practice</span></button><button id="demo" aria-label="Listen"><span class="kid-icon" aria-hidden="true">♫</span><span class="adult-label"><span aria-hidden="true">▷</span> Listen</span></button><button id="stop" aria-label="Stop" disabled><span class="kid-icon" aria-hidden="true">■</span><span class="adult-label">Stop</span></button>
             </div>
             <div class="tempo"><label for="tempo">Tempo</label><input id="tempo" type="range" min="35" max="150" value="${bpm}" /><output id="bpm" for="tempo">${bpm} BPM</output></div>
           </div>
@@ -712,6 +766,7 @@ function display(): void {
   element('octave-down').onclick = () => { keyboardOctave--; updateOctave() }
   element('octave-up').onclick = () => { keyboardOctave++; updateOctave() }
   element('tempo').oninput = () => { element('bpm').textContent = `${settings().bpm} BPM` }
+  element('key-scroll').onscroll = positionHands
   element('finger-hints').onchange = () => renderFingering(fingerEvents)
   element<HTMLInputElement>('key-hints').onchange = () => {
     hintPreference = element<HTMLInputElement>('key-hints').checked
@@ -738,6 +793,7 @@ function display(): void {
 }
 
 window.addEventListener('hashchange', display)
+window.addEventListener('resize', positionHands)
 window.addEventListener('pointerup', event => release(`pointer:${event.pointerId}`))
 window.addEventListener('pointercancel', event => release(`pointer:${event.pointerId}`))
 window.addEventListener('lostpointercapture', event => release(`pointer:${event.pointerId}`))
