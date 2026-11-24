@@ -1,5 +1,5 @@
 import type { Event, Hands, Lesson } from './lessons'
-import type { TimingFeedback } from './practice'
+import { timingFeedback, type TimingFeedback } from './practice'
 
 function durationText(event: Event): string {
   const name = event.notes.map(note => note.spelling).join(' + ') || 'Rest'
@@ -13,6 +13,7 @@ export class RhythmDisplay {
   private readonly summary: HTMLElement
   private readonly feedback: HTMLElement
   private readonly timing = new Map<Event, { feedback: TimingFeedback; difference: number }>()
+  private readonly guidedFills = new Map<Event, number>()
   private hands?: Hands
   private measureStart = -1
   private lastPulse = -1
@@ -79,7 +80,7 @@ export class RhythmDisplay {
     this.lastPosition = -1
     this.clearTiming()
     this.blocks.forEach(({ element, fill }) => {
-      element.classList.remove('sounding')
+      element.classList.remove('sounding', 'rhythm-next')
       fill.style.transform = 'scaleX(0)'
     })
     this.summary.textContent = ''
@@ -88,9 +89,12 @@ export class RhythmDisplay {
 
   clearTiming(keepSpace = false): void {
     this.timing.clear()
+    this.guidedFills.clear()
     this.blocks.forEach(({ element }) => delete element.dataset.timing)
     this.feedback.textContent = ''
     delete this.feedback.dataset.timing
+    this.feedback.classList.remove('guided-timing')
+    this.feedback.style.removeProperty('--timing-fill')
     this.feedback.hidden = !keepSpace
   }
 
@@ -106,35 +110,78 @@ export class RhythmDisplay {
       const block = this.blocks.find(block => block.event === event)
       if (block) block.element.dataset.timing = feedback
     }
+    this.showFeedback(feedback)
+  }
+
+  private showFeedback(feedback: TimingFeedback): void {
     const messages = { early: '↑ Early', 'on-beat': '✓ On beat', late: '↓ Late' }
     this.feedback.dataset.timing = feedback
     this.feedback.textContent = messages[feedback]
     this.feedback.hidden = false
   }
 
-  guideDuration(beat: number, elapsedBeats: number): boolean {
-    let filling = false
-    for (const { event, fill } of this.blocks) {
-      if (event.beat !== beat || !event.notes.length) continue
-      const fraction = Math.min(1, elapsedBeats / event.duration)
-      fill.style.transform = `scaleX(${fraction})`
-      filling ||= fraction < 1
+  recordGuidedTransition(hands: Hands, beat: number, elapsedBeats: number, expectedBeats: number, bpm: number): void {
+    const difference = (elapsedBeats - expectedBeats) * 60 / bpm
+    const feedback = timingFeedback(difference)
+    for (const event of this.notesAt(hands, beat)) {
+      this.guidedFills.set(event, Math.min(1, elapsedBeats / event.duration))
+      this.timing.set(event, { feedback, difference })
     }
-    return filling
+    this.showFeedback(feedback)
+    this.feedback.classList.add('guided-timing')
+    this.feedback.style.setProperty('--timing-fill', `${Math.min(1, elapsedBeats / expectedBeats) * 100}%`)
+  }
+
+  private notesAt(hands: Hands, beat: number): Event[] {
+    return this.lesson.events.filter(event => event.beat === beat && event.notes.length &&
+      (hands === 'both' || event.hand === hands))
+  }
+
+  showGuided(hands: Hands, cueBeat: number | undefined, playedBeat?: number): void {
+    const beat = playedBeat ?? cueBeat
+    if (beat === undefined) return
+    this.measure(hands, beat)
+    const position = beat - this.measureStart
+    this.pulse(playedBeat === undefined ? -1 : Math.floor(position))
+    this.cursor.hidden = false
+    this.cursor.style.left = `${position / this.lesson.meter * 100}%`
+    for (const { event, element, fill } of this.blocks) {
+      element.classList.toggle('sounding', event.beat === beat && event.notes.length > 0)
+      element.classList.toggle('rhythm-next', event.beat === cueBeat && event.notes.length > 0)
+      const timing = this.timing.get(event)
+      if (timing) element.dataset.timing = timing.feedback
+      else delete element.dataset.timing
+      fill.style.transform = `scaleX(${this.guidedFills.get(event) ?? 0})`
+    }
+    this.summary.textContent = this.notesAt(hands, beat).map(durationText).join(' / ')
+    this.onNotes(cueBeat === undefined ? [] : this.notesAt(hands, cueBeat))
+  }
+
+  guideDuration(beat: number, elapsedBeats: number, expectedBeats: number): boolean {
+    const elapsed = Math.min(elapsedBeats, expectedBeats)
+    const position = Math.min(this.lesson.meter, beat - this.measureStart + elapsed)
+    this.pulse(Math.min(this.lesson.meter - 1, Math.floor(position)))
+    this.cursor.style.left = `${position / this.lesson.meter * 100}%`
+    for (const { event, fill } of this.blocks) {
+      if (event.beat !== beat && (event.notes.length || event.beat <= beat)) continue
+      const fraction = Math.min(1, Math.max(0, (beat + elapsed - event.beat) / event.duration))
+      fill.style.transform = `scaleX(${fraction})`
+    }
+    return elapsedBeats < expectedBeats
   }
 
   countIn(position: number): void {
     this.pulse(position < 0 ? -1 : Math.floor(position) % this.lesson.meter)
   }
 
-  show(hands: Hands, beat: number, startingOnly = false): void {
+  show(hands: Hands, beat: number): void {
     this.measure(hands, beat)
     const position = beat - this.measureStart
     this.pulse(Math.floor(position))
     this.cursor.hidden = false
     this.cursor.style.left = `${position / this.lesson.meter * 100}%`
     for (const { event, fill } of this.blocks) {
-      const fraction = startingOnly ? 0 : Math.min(1, Math.max(0, (beat - event.beat) / event.duration))
+      const fraction = Math.min(1, Math.max(0, (beat - event.beat) / event.duration))
       fill.style.transform = `scaleX(${fraction})`
     }
     const subdivision = Math.floor(beat * 2)
@@ -147,7 +194,7 @@ export class RhythmDisplay {
       element.classList.toggle('sounding', sounding)
       if (sounding) {
         labels.push(durationText(event))
-        if (event.notes.length && (!startingOnly || event.beat === beat)) notes.push(event)
+        if (event.notes.length) notes.push(event)
       }
     }
     this.summary.textContent = labels.join(' / ')

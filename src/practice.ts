@@ -20,6 +20,10 @@ export const timingTolerance = 0.18
 export const timingFeedbackWindow = 0.45
 export type TimingFeedback = 'early' | 'on-beat' | 'late'
 
+export function timingFeedback(difference: number): TimingFeedback {
+  return Math.abs(difference) <= timingTolerance ? 'on-beat' : difference < 0 ? 'early' : 'late'
+}
+
 export function matchTiming(
   steps: Step[], hit: Hit, secondsPerBeat: number, claimed: ReadonlySet<number>,
 ): { beat: number; feedback: TimingFeedback; difference: number } | undefined {
@@ -31,9 +35,7 @@ export function matchTiming(
     if (!closest || Math.abs(difference) < Math.abs(closest.difference)) closest = { beat: step.beat, difference }
   }
   if (!closest) return
-  const { difference } = closest
-  const feedback = Math.abs(difference) <= timingTolerance ? 'on-beat' : difference < 0 ? 'early' : 'late'
-  return { ...closest, feedback }
+  return { ...closest, feedback: timingFeedback(closest.difference) }
 }
 
 export type Hit = { pitch: number; beat: number }

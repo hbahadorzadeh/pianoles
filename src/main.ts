@@ -26,6 +26,7 @@ const keyRows = [
 ]
 let lesson: Lesson
 let guided: Step[] | undefined
+let guidedPrevious: { beat: number; started: number } | undefined
 let stepIndex = 0
 let timed: {
   start: number
@@ -72,9 +73,10 @@ function updateSidebar(): void {
   element('best').textContent = best ? `Best full attempt · ${best.pitch}% pitch · ${best.timing}% timing` : ''
 }
 
-function stop(): void {
+function stop(keepRhythm = false): void {
   generation++
   guided = undefined
+  guidedPrevious = undefined
   freshChord.clear()
   timed = undefined
   active = false
@@ -84,7 +86,7 @@ function stop(): void {
   if (stopButton) stopButton.disabled = true
   highlight(-1)
   setHintPitches(new Set())
-  if (rhythm) {
+  if (rhythm && !keepRhythm) {
     const { hands, first } = settings()
     rhythm.preview(hands, (first - 1) * lesson.meter)
   }
@@ -117,20 +119,29 @@ function highlight(beat: number, sounding?: Event[]): void {
   }
 }
 
+function guidedInterval(from: number, to: number, passageBeats: number): number {
+  return to > from ? to - from : to + passageBeats - from
+}
+
 function showGuidedStep(): void {
   const step = guided?.[stepIndex]
   if (!step) return
   const beat = step.beat + pitchOffset
-  const { hands, bpm } = settings()
+  const { hands, bpm, first, last } = settings()
   highlight(beat)
   setHintPitches(step.pitches)
-  rhythm?.show(hands, beat, true)
+  const previous = guidedPrevious
+  rhythm?.showGuided(hands, beat, previous?.beat)
+  if (previous) {
+    animateGuidedBar(previous.beat, previous.started, bpm, guidedInterval(previous.beat, beat, (last - first + 1) * lesson.meter))
+  }
+}
 
+function animateGuidedBar(beat: number, started: number, bpm: number, expectedBeats: number): void {
   cancelAnimationFrame(animation)
-  const started = performance.now()
   function fill(time: number): void {
     const elapsedBeats = Math.max(0, (time - started) * bpm / 60_000)
-    if (rhythm?.guideDuration(beat, elapsedBeats)) animation = requestAnimationFrame(fill)
+    if (rhythm?.guideDuration(beat, elapsedBeats, expectedBeats)) animation = requestAnimationFrame(fill)
   }
   animation = requestAnimationFrame(fill)
 }
@@ -206,6 +217,15 @@ function checkGuided(): void {
     status('Play the highlighted note or chord to continue.')
     return
   }
+  const { loop, full, hands, bpm, first, last } = settings()
+  const beat = step.beat + pitchOffset
+  const started = performance.now()
+  if (guidedPrevious) {
+    const elapsedBeats = (started - guidedPrevious.started) * bpm / 60_000
+    const interval = guidedInterval(guidedPrevious.beat, beat, (last - first + 1) * lesson.meter)
+    rhythm?.recordGuidedTransition(hands, guidedPrevious.beat, elapsedBeats, interval, bpm)
+  }
+  guidedPrevious = { beat, started }
   kidsCue('correct')
   freshChord.clear()
   stepIndex++
@@ -214,7 +234,6 @@ function checkGuided(): void {
     showGuidedStep()
     return
   }
-  const { loop, full } = settings()
   if (loop) {
     stepIndex = 0
     status('Passage complete. Release the keys and repeat.')
@@ -226,7 +245,11 @@ function checkGuided(): void {
     saveProgress(progress, kidsMode)
     updateSidebar()
   }
-  stop()
+  stop(true)
+  rhythm?.showGuided(hands, undefined, beat)
+  animateGuidedBar(beat, started, bpm, Math.max(...lesson.events
+    .filter(event => event.beat === beat && event.notes.length && (hands === 'both' || event.hand === hands))
+    .map(event => event.duration)))
   kidsCue('done')
   status(full ? 'Lesson complete. You can replay it or try timed practice.' : 'Practice complete.')
 }
@@ -271,7 +294,8 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
   if (mode === 'guided') {
     kidsCue('play')
     guided = steps
-    status('Play the highlighted note or chord to continue.')
+    rhythm?.clearTiming(true)
+    status('Play the highlighted note or chord to start the bar.')
     showGuidedStep()
     return
   }

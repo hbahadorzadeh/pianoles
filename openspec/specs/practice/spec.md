@@ -36,7 +36,7 @@ The app SHALL highlight the keys to play when hints are enabled. Guided hints SH
 - **THEN** the keyboard clears its hints immediately and playback continues
 
 ### Requirement: Visual beat and duration
-The app SHALL draw note and rest lengths proportionally against beat markers, with a lane per selected hand. In timed practice and demonstrations, the cursor and each bar's fill SHALL follow the audio clock. In guided practice, the cursor SHALL follow the current position and the note bars SHALL fill at the selected tempo while the app waits for input.
+The app SHALL draw note and rest lengths proportionally against beat markers, with a lane per selected hand. In timed practice and demonstrations, the cursor and each bar's fill SHALL follow the audio clock. In guided practice, the bar SHALL remain empty until the learner plays the first correct note group, then fill at the selected tempo from each accepted onset.
 
 #### Scenario: Contrast note lengths
 - **WHEN** a learner compares a one-beat note and a two-beat note
@@ -45,6 +45,10 @@ The app SHALL draw note and rest lengths proportionally against beat markers, wi
 #### Scenario: Follow a sustained note
 - **WHEN** playback is halfway through a note
 - **THEN** its duration bar is half full and its note remains highlighted on the score
+
+#### Scenario: Start guided practice
+- **WHEN** the learner selects Start guided
+- **THEN** the first note is cued and the progress bar waits for the first correct note group
 
 ### Requirement: Pre-reader practice
 The app SHALL offer Kids mode with large icon controls, slower demonstrations, key hints, visible notation, and visible feedback when retrying or completing a lesson. The score SHALL follow the active measure.
@@ -69,8 +73,12 @@ The app SHALL show authored finger suggestions in lessons 1–15 with whole hand
 - **THEN** the right hand moves below middle C and its thumb matches the accent on the key
 
 ### Requirement: Live timing feedback
-In timed practice the app SHALL show whether a matched strike came early, on the beat, or late. Early strikes SHALL use blue and late strikes SHALL use red. Each color cue SHALL have a text label.
+In timed practice the app SHALL show whether a matched strike came early, on the beat, or late. In guided practice the app SHALL compare the interval between successive correct note groups to the written onset interval and color the preceding bar. Early timing SHALL use soft blue and late timing SHALL use muted red. Each color cue SHALL have a text label.
 
 #### Scenario: Play a matched note early
 - **WHEN** the learner plays the right note before its timing tolerance
 - **THEN** the app shows an Early label and colors the corresponding bar blue
+
+#### Scenario: Change to the next guided note too soon
+- **WHEN** the learner plays the next correct note before the written interval has elapsed beyond the timing tolerance
+- **THEN** the preceding bar stops filling and turns soft blue

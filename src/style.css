@@ -316,13 +316,38 @@ h1 { font-size: clamp(30px, 4vw, 51px); font-weight: 730; letter-spacing: -.065e
 }
 .rhythm-lane.left .rhythm-fill { background: #548d79; }
 .rhythm-rest .rhythm-fill, .rhythm-lane.left .rhythm-rest .rhythm-fill { background: #adb9aa; }
-.rhythm-note[data-timing=early], .rhythm-lane.left .rhythm-note[data-timing=early] { outline: 1px solid #2560b9; background: #dce9ff; }
-.rhythm-note[data-timing=late], .rhythm-lane.left .rhythm-note[data-timing=late] { outline: 1px solid #b02b38; background: #fce2e5; }
-.rhythm-note[data-timing=early] .rhythm-fill { background: #2865c0; }
-.rhythm-note[data-timing=late] .rhythm-fill { background: #b62e3d; }
-#rhythm-feedback { min-height: 1.4em; margin-top: 7px; color: #36543f; font-size: 13px; font-weight: 750; }
-#rhythm-feedback[data-timing=early] { color: #20549e; }
-#rhythm-feedback[data-timing=late] { color: #9d2431; }
+.rhythm-next { outline: 1px dashed #7d8b75; }
+.rhythm-note[data-timing=early], #rhythm-feedback[data-timing=early] {
+  --timing-track: #e3ebf4;
+  --timing-color: #a0b8d2;
+  --timing-text: #46647f;
+}
+.rhythm-note[data-timing=late], #rhythm-feedback[data-timing=late] {
+  --timing-track: #f3e5e5;
+  --timing-color: #cda4a6;
+  --timing-text: #864f53;
+}
+.rhythm-lane .rhythm-note:is([data-timing=early], [data-timing=late]) {
+  outline: 1px solid var(--timing-color);
+  background: var(--timing-track);
+}
+.rhythm-note:is([data-timing=early], [data-timing=late]) .rhythm-fill { background: var(--timing-color); }
+#rhythm-feedback {
+  min-height: 1.4em;
+  margin-top: 7px;
+  color: var(--timing-text, #36543f);
+  font-size: 13px;
+  font-weight: 750;
+}
+#rhythm-feedback.guided-timing::before {
+  content: '';
+  display: inline-block;
+  width: 32px;
+  height: 8px;
+  margin-inline-end: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--timing-color, #74a342) var(--timing-fill), var(--timing-track, #e2ead9) var(--timing-fill));
+}
 .kids-mode .sheet { padding-top: 4px; }
 .kids-mode .sheet-header { display: none; }
 .kids-mode #score { margin: 0; scroll-snap-type: x mandatory; }
