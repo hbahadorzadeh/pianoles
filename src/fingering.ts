@@ -22,9 +22,9 @@ export function handDiagram(hand: Hand): string {
   const fingers = hand === 'left' ? [5, 4, 3, 2, 1] : [1, 2, 3, 4, 5]
   const handName = hand === 'left' ? 'Left hand' : 'Right hand'
   return `<div class="finger-hand" data-hand="${hand}" hidden>
-    <span class="finger-label">${handName}</span>
     <div class="hand-diagram ${hand}" role="img" aria-label="${handName}">
       ${fingers.map(finger => `<span class="finger finger-${finger}" data-finger="${finger}"><b>${finger}</b></span>`).join('')}
     </div>
+    <span class="finger-label">${handName}</span>
   </div>`
 }

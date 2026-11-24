@@ -624,8 +624,8 @@ function display(): void {
           <div class="keyboard-head"><div><h2 id="keyboard-heading">Piano keyboard</h2><p>Play with touch or follow the shortcut letters.</p></div>
             <div class="octaves"><button id="octave-down" aria-label="Lower keyboard octave">−</button><span id="octave-label"></span><button id="octave-up" aria-label="Raise keyboard octave">+</button></div>
           </div>
-          <div id="fingering" aria-label="Suggested fingers" hidden>${lesson.hands.map(handDiagram).join('')}</div>
           <div id="key-scroll"><div id="piano"></div></div>
+          <div id="fingering" aria-label="Suggested fingers" hidden>${lesson.hands.map(handDiagram).join('')}</div>
           <div class="keyboard-foot" id="best"></div>
         </section>
       </main>
