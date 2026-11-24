@@ -18,6 +18,9 @@ Open the Vite URL under `/pianoles/`. Run `npm test` for the curriculum and prac
 - Use **Start guided** to work through the highlighted notes or **Timed practice** to play with the metronome. Choose a hand or loop a measure range for focused practice.
 - Share a specific lesson with a URL such as `/pianoles/#/lesson/18`.
 
+- Use **Beat & duration** to see how long notes and rests last. The playhead moves during timed practice and demonstrations.
+- Turn on **Kids mode** for large icons, slower demonstrations that lead into guided play, and separate progress. Matching colors and numbers on the hand diagram and keyboard suggest fingering in lessons 1–15.
+
 ## Publish
 
 The **Publish Pianoles** workflow builds and publishes `main` to GitHub Pages. The repository's Pages source must be set to **GitHub Actions**. After selecting the source, run the workflow from the **Actions** tab or push to `main`.

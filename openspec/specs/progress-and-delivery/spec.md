@@ -19,3 +19,10 @@ The app SHALL build and deploy to the repository's GitHub Pages project path thr
 #### Scenario: Open the published course
 - **WHEN** a learner opens the project Pages URL
 - **THEN** the course loads its bundled assets and runs without an application server
+
+### Requirement: Separate Kids mode progress
+The app SHALL store Kids mode progress and the last Kids mode lesson independently from standard practice.
+
+#### Scenario: Switch back to standard practice
+- **WHEN** a learner exits Kids mode after completing a lesson
+- **THEN** the app resumes the standard practice lesson with its own completion state

@@ -1,12 +1,19 @@
 import './style.css'
 import { PianoAudio } from './audio'
-import { lessons, units, type Hands, type Lesson } from './lessons'
+import { lessons, units, type Event, type Hands, type Lesson } from './lessons'
 import { renderScore } from './notation'
 import { matchesChord, practiceSteps, scoreAttempt, type Hit, type Step } from './practice'
-import { loadProgress, saveProgress } from './progress'
+import { loadProgress, readKidsMode, saveKidsMode, saveProgress } from './progress'
+import { RhythmDisplay } from './rhythm'
+import { fingerFor, handDiagram, lastLessonWithFingerings } from './fingering'
 
 const app = document.querySelector<HTMLDivElement>('#app')!
-const progress = loadProgress()
+let kidsMode = readKidsMode()
+const adultProgress = loadProgress(false)
+const kidsProgress = loadProgress(true)
+let progress = kidsMode ? kidsProgress : adultProgress
+let rhythm: RhythmDisplay | undefined
+let fingerEvents: Event[] = []
 const audio = new PianoAudio()
 const held = new Map<string, number>()
 const pressed = new Set<number>()
@@ -68,6 +75,19 @@ function stop(): void {
   if (stopButton) stopButton.disabled = true
   highlight(-1)
   setHintPitches(new Set())
+  if (rhythm) {
+    const { hands, first } = settings()
+    rhythm.preview(hands, (first - 1) * lesson.meter)
+  }
+  kidsCue('ready')
+}
+
+function kidsCue(cue: 'ready' | 'play' | 'listen' | 'correct' | 'retry' | 'done'): void {
+  const indicator = element('kids-cue')
+  if (!indicator) return
+  const symbols = { ready: '▶︎', play: '👆', listen: '♫', correct: '✓', retry: '↻', done: '★' }
+  indicator.textContent = symbols[cue]
+  indicator.dataset.cue = cue
 }
 
 function highlight(beat: number): void {
@@ -90,6 +110,7 @@ function showGuidedStep(): void {
   if (!step) return
   highlight(step.beat + pitchOffset)
   setHintPitches(step.pitches)
+  rhythm?.show(settings().hands, step.beat + pitchOffset, true)
 }
 
 function setHintPitches(pitches: ReadonlySet<number>): void {
@@ -144,13 +165,16 @@ function checkGuided(): void {
   if (!guided) return
   const step = guided[stepIndex]
   if ([...freshChord].some(pitch => !step.pitches.has(pitch))) {
+    kidsCue('retry')
     status('That pitch is outside the highlighted note group. Release it and try again.')
     return
   }
   if (!matchesChord(step.pitches, freshChord)) {
+    kidsCue('play')
     status('Play the highlighted note or chord to continue.')
     return
   }
+  kidsCue('correct')
   freshChord.clear()
   stepIndex++
   if (stepIndex < guided.length) {
@@ -167,10 +191,11 @@ function checkGuided(): void {
   }
   if (full) {
     progress.completed[lesson.id] = true
-    saveProgress(progress)
+    saveProgress(progress, kidsMode)
     updateSidebar()
   }
   stop()
+  kidsCue('done')
   status(full ? 'Lesson complete. You can replay it or try timed practice.' : 'Practice complete.')
 }
 
@@ -212,6 +237,7 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
   active = true
   element<HTMLButtonElement>('stop').disabled = false
   if (mode === 'guided') {
+    kidsCue('play')
     guided = steps
     status('Play the highlighted note or chord to continue.')
     showGuidedStep()
@@ -230,6 +256,7 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
   }
   if (session !== generation) return
   audio.beginPlayback()
+  if (mode === 'demo') kidsCue('listen')
   const secondsPerBeat = 60 / bpm
   const count = mode === 'timed' ? lesson.meter : 0
   const duration = (last - first + 1) * lesson.meter
@@ -258,8 +285,10 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
     if (session !== generation) return
     const position = (context.currentTime - roundStart) / secondsPerBeat
     if (position < 0) {
+      rhythm?.countIn(position + count)
       status(`Get ready · ${Math.min(count, Math.ceil(-position))}`.replace(/ · 0$/, ''))
     } else if (position < duration) {
+      rhythm?.show(hands, offset + position)
       const beat = Math.floor(position * 2) / 2
       highlight(offset + beat)
       if (beat !== lastHintBeat) {
@@ -294,10 +323,14 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
         if (scores && full) {
           const best = progress.best[lesson.id]
           if (!best || scores.pitch + scores.timing > best.pitch + best.timing) progress.best[lesson.id] = scores
-          saveProgress(progress)
+          saveProgress(progress, kidsMode)
           updateSidebar()
         }
         stop()
+        if (mode === 'demo' && kidsMode) {
+          void start('guided')
+          return
+        }
         status(scores ? `Attempt complete · ${scores.pitch}% pitch · ${scores.timing}% timing` : 'Demonstration complete.')
         return
       }
@@ -305,6 +338,39 @@ async function start(mode: 'guided' | 'timed' | 'demo'): Promise<void> {
     animation = requestAnimationFrame(tick)
   }
   tick()
+}
+
+function renderFingering(events: Event[]): void {
+  fingerEvents = events
+  const panel = element('fingering')
+  const enabled = lesson.id <= lastLessonWithFingerings &&
+    (kidsMode || element<HTMLInputElement>('finger-hints').checked)
+  const { hands } = settings()
+  const diagrams = panel.querySelectorAll<HTMLElement>('.finger-hand')
+  diagrams.forEach(diagram => {
+    diagram.hidden = hands !== 'both' && diagram.dataset.hand !== hands
+    diagram.querySelectorAll('.finger.active').forEach(node => node.classList.remove('active'))
+  })
+  keys.forEach(key => {
+    delete key.dataset.finger
+    key.removeAttribute('aria-description')
+  })
+  if (enabled) {
+    for (const event of events) {
+      const diagram = panel.querySelector<HTMLElement>(`[data-hand="${event.hand}"]`)!
+      for (const note of event.notes) {
+        const finger = fingerFor(lesson, event, note.spelling)
+        if (!finger) continue
+        diagram.querySelector(`[data-finger="${finger}"]`)?.classList.add('active')
+        const key = keys.get(note.midi)
+        if (key) {
+          key.dataset.finger = String(finger)
+          key.setAttribute('aria-description', `Suggested finger: ${event.hand} hand ${finger}`)
+        }
+      }
+    }
+  }
+  panel.hidden = !enabled
 }
 
 function makeKeyboard(): void {
@@ -473,6 +539,7 @@ function setMidiPanel(open: boolean): void {
 
 function display(): void {
   stop()
+  rhythm = undefined
   const match = /^#\/lesson\/([1-9]\d*)$/.exec(location.hash)
   const home = location.hash === '' || location.hash === '#/'
   const id = home ? Number(progress.last) || 1 : match ? Number(match[1]) : 0
@@ -480,7 +547,7 @@ function display(): void {
   lesson = chosen ?? lessons[0]
   if (home || chosen) {
     progress.last = lesson.id
-    saveProgress(progress)
+    saveProgress(progress, kidsMode)
   }
   highlighted = -1
   const unit = Math.floor((lesson.id - 1) / 6)
@@ -492,11 +559,14 @@ function display(): void {
           <span class="lesson-number">${String(entry.id).padStart(2, '0')}</span><span>${entry.title}</span><span class="check" aria-hidden="true"></span>
         </a>`).join('')}
     </section>`).join('')
+  const bpm = kidsMode ? 48 : lesson.tempo
   const barOptions = Array.from({ length: lesson.measures }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')
+  app.classList.toggle('kids-mode', kidsMode)
   app.innerHTML = `
     <header class="site-header">
       <a class="brand" href="#/" aria-label="Pianoles home"><span class="brand-mark" aria-hidden="true">♩</span>pianoles<span class="brand-dot">.</span></a>
       <div class="header-actions">
+        <button type="button" id="kids-toggle" aria-pressed="${kidsMode}" aria-label="Kids mode">${kidsMode ? 'Exit kids mode' : 'Kids mode'}</button>
         <button type="button" id="catalog" aria-controls="sidebar" aria-expanded="false">Lessons</button>
         <button type="button" id="midi" aria-controls="midi-panel" aria-expanded="false">Connect MIDI</button>
         <section id="midi-panel" aria-labelledby="midi-heading" hidden>
@@ -530,10 +600,12 @@ function display(): void {
         <section class="studio" aria-label="Practice studio">
           <div class="studio-toolbar">
             <div class="play-controls">
-              <button class="primary" id="guided">Start guided</button><button id="timed">Timed practice</button><button id="demo"><span aria-hidden="true">▷</span> Listen</button><button id="stop" disabled>Stop</button>
+              <button class="primary" id="guided" aria-label="Start guided"><span class="kid-icon" aria-hidden="true">▶&#xfe0e;</span><span class="adult-label">Start guided</span></button><button id="timed">Timed practice</button><button id="demo" aria-label="Listen"><span class="kid-icon" aria-hidden="true">♫</span><span class="adult-label"><span aria-hidden="true">▷</span> Listen</span></button><button id="stop" aria-label="Stop" disabled><span class="kid-icon" aria-hidden="true">■</span><span class="adult-label">Stop</span></button>
             </div>
-            <div class="tempo"><label for="tempo">Tempo</label><input id="tempo" type="range" min="35" max="150" value="${lesson.tempo}" /><output id="bpm" for="tempo">${lesson.tempo} BPM</output></div>
+            <div class="tempo"><label for="tempo">Tempo</label><input id="tempo" type="range" min="35" max="150" value="${bpm}" /><output id="bpm" for="tempo">${bpm} BPM</output></div>
           </div>
+          <div id="kids-cue" aria-hidden="true" data-cue="ready">▶</div>
+          <div id="rhythm" class="rhythm" role="group" aria-label="Visual metronome and note durations"></div>
           <div class="sheet">
             <div class="sheet-header"><h2>Sheet music</h2><span>${lesson.key} major · ${lesson.meter}/4</span></div>
             <div id="score" tabindex="0" aria-label="Scrollable sheet music"></div>
@@ -544,13 +616,15 @@ function display(): void {
             <select id="hands">${lesson.hands.length === 2 ? '<option value="both">Both hands</option>' : ''}${lesson.hands.map(hand => `<option value="${hand}">${hand === 'left' ? 'Left' : 'Right'} hand</option>`).join('')}</select>
             <label class="checkbox"><input id="loop" type="checkbox" /> Loop measures</label>
             <div id="range" hidden><select id="first" aria-label="First measure">${barOptions}</select><span>–</span><select id="last" aria-label="Last measure">${barOptions}</select></div>
-            <label class="checkbox hints"><input id="key-hints" type="checkbox" ${(hintPreference ?? (lesson.id <= 3)) ? 'checked' : ''} /> Key hints</label>
+            <label class="checkbox" ${lesson.id > lastLessonWithFingerings ? 'hidden' : ''}><input id="finger-hints" type="checkbox" checked /> Finger hints</label>
+            <label class="checkbox hints"><input id="key-hints" type="checkbox" ${(kidsMode || (hintPreference ?? (lesson.id <= 3))) ? 'checked' : ''} /> Key hints</label>
           </div>
         </section>
         <section class="keyboard${lesson.hands.length === 2 ? ' keyboard-compact' : ''}" aria-labelledby="keyboard-heading">
           <div class="keyboard-head"><div><h2 id="keyboard-heading">Piano keyboard</h2><p>Play with touch or follow the shortcut letters.</p></div>
             <div class="octaves"><button id="octave-down" aria-label="Lower keyboard octave">−</button><span id="octave-label"></span><button id="octave-up" aria-label="Raise keyboard octave">+</button></div>
           </div>
+          <div id="fingering" aria-label="Suggested fingers" hidden>${lesson.hands.map(handDiagram).join('')}</div>
           <div id="key-scroll"><div id="piano"></div></div>
           <div class="keyboard-foot" id="best"></div>
         </section>
@@ -561,6 +635,8 @@ function display(): void {
   keyboardOctave = 3
   renderScore(element('score'), lesson)
   makeKeyboard()
+  rhythm = new RhythmDisplay(element('rhythm'), lesson, renderFingering)
+  rhythm.preview(settings().hands, 0)
   refreshKeys()
   updateSidebar()
   renderMidiStatus()
@@ -568,6 +644,15 @@ function display(): void {
   const current = document.querySelector<HTMLElement>('[aria-current="page"]')
   if (current && (current.offsetTop < element('lesson-list').scrollTop || current.offsetTop + current.offsetHeight > element('lesson-list').clientHeight)) {
     element('lesson-list').scrollTop = current.offsetTop - 48
+  }
+  element('kids-toggle').onclick = () => {
+    stop()
+    kidsMode = !kidsMode
+    saveKidsMode(kidsMode)
+    progress = kidsMode ? kidsProgress : adultProgress
+    history.replaceState(null, '', `#/lesson/${progress.last}`)
+    display()
+    element('kids-toggle').focus()
   }
   element('catalog').onclick = () => {
     const open = element('sidebar').classList.toggle('open')
@@ -598,6 +683,7 @@ function display(): void {
   element('octave-down').onclick = () => { keyboardOctave--; updateOctave() }
   element('octave-up').onclick = () => { keyboardOctave++; updateOctave() }
   element('tempo').oninput = () => { element('bpm').textContent = `${settings().bpm} BPM` }
+  element('finger-hints').onchange = () => renderFingering(fingerEvents)
   element<HTMLInputElement>('key-hints').onchange = () => {
     hintPreference = element<HTMLInputElement>('key-hints').checked
     refreshKeys()
@@ -612,6 +698,7 @@ function display(): void {
       }
       element('range').hidden = !settings().loop
       element('result').textContent = ''
+      rhythm?.preview(settings().hands, (settings().first - 1) * lesson.meter)
       if (active) {
         stop()
         refreshKeys()
