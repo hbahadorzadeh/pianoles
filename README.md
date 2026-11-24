@@ -14,7 +14,7 @@ Open the Vite URL under `/pianoles/`. Run `npm test` for the curriculum and prac
 ## Play
 
 - Use touch or mouse on the piano, or follow the shortcut letters on the displayed keys.
-- For a digital piano, connect USB or pair the Bluetooth MIDI device in the operating system, then select **Connect MIDI** in a browser that supports Web MIDI. Bluetooth works when the browser exposes the paired input.
+- For a digital piano, connect USB or pair the Bluetooth MIDI device in the operating system, then select **Connect MIDI** in a browser that supports Web MIDI. Choose the input in the MIDI panel and play a note to check that it is received. Bluetooth works when the browser exposes the paired input.
 - Use **Start guided** to work through the highlighted notes or **Timed practice** to play with the metronome. Choose a hand or loop a measure range for focused practice.
 - Share a specific lesson with a URL such as `/pianoles/#/lesson/18`.
 

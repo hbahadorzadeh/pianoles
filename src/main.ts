@@ -32,6 +32,9 @@ let hintPitches: ReadonlySet<number> = new Set()
 let hintPreference: boolean | undefined
 let midiAccess: MIDIAccess | undefined
 let midiInput: MIDIInput | undefined
+let midiRequestPending = false
+let midiStatus = ''
+let midiLastNote = ''
 
 function element<T extends HTMLElement = HTMLElement>(id: string): T {
   return document.getElementById(id) as T
@@ -367,56 +370,105 @@ function updateOctave(): void {
   if (target) element('key-scroll').scrollLeft = target.offsetLeft
 }
 
-function selectMidi(id: string): void {
+function renderMidiStatus(): void {
+  element('midi-status').textContent = midiStatus
+  element('midi-last-note').textContent = midiLastNote
+  element<HTMLButtonElement>('midi-scan').disabled = midiRequestPending
+}
+
+function setMidiStatus(message: string): void {
+  midiStatus = message
+  renderMidiStatus()
+}
+
+async function selectMidi(input: MIDIInput | undefined): Promise<void> {
+  if (input && midiInput === input) return
   if (midiInput) midiInput.onmidimessage = null
   for (const source of held.keys()) if (source.startsWith('midi:')) release(source)
-  midiInput = midiAccess?.inputs.get(id)
-  if (!midiInput || midiInput.state === 'disconnected') {
-    midiInput = undefined
-    element('midi-status').textContent = 'No MIDI device connected'
+  midiInput = input
+  midiLastNote = ''
+  if (!input) {
+    setMidiStatus('No MIDI inputs detected. Connect a USB piano or pair a Bluetooth MIDI instrument, then check again.')
     return
   }
-  midiInput.onmidimessage = event => {
+
+  const name = input.name || 'MIDI instrument'
+  setMidiStatus(`Opening ${name}…`)
+  try {
+    await input.open()
+  } catch {
+    if (midiInput === input) {
+      midiInput = undefined
+      setMidiStatus(`Could not open ${name}. Reconnect it and check again, or choose another input.`)
+    }
+    return
+  }
+  if (midiInput !== input || input.state !== 'connected') return
+
+  input.onmidimessage = event => {
     if (!event.data || event.data.length < 3) return
     const [command, pitch, velocity] = event.data
     const kind = command & 0xf0
     const source = `midi:${command & 0x0f}:${pitch}`
-    if (kind === 0x90 && velocity > 0) press(source, pitch, velocity / 127)
+    if (kind === 0x90 && velocity > 0) {
+      const octave = Math.floor(pitch / 12) - 1
+      midiLastNote = `Last MIDI note: ${noteNames[pitch % 12]}${octave}`
+      element('midi-last-note').textContent = midiLastNote
+      press(source, pitch, velocity / 127)
+    }
     if (kind === 0x80 || (kind === 0x90 && velocity === 0)) release(source)
   }
-  element('midi-status').textContent = `Connected · ${midiInput.name || 'MIDI instrument'}`
+  setMidiStatus(`Connected · ${name}. Play a note to test the input.`)
 }
 
 function refreshMidi(): void {
+  if (!midiAccess) return
   const select = element<HTMLSelectElement>('midi-devices')
-  select.replaceChildren(new Option('Choose MIDI input', ''))
-  for (const device of midiAccess?.inputs.values() ?? []) {
-    if (device.state === 'connected') select.add(new Option(device.name || 'MIDI instrument', device.id))
-  }
-  select.hidden = select.options.length === 1
-  if (midiInput && midiInput.state === 'connected') {
-    select.value = midiInput.id
-    element('midi-status').textContent = `Connected · ${midiInput.name || 'MIDI instrument'}`
-    return
-  }
-  const firstInput = select.options[1]?.value ?? ''
-  select.value = firstInput
-  selectMidi(firstInput)
+  const connected = [...midiAccess.inputs.values()].filter(input => input.state === 'connected')
+  select.replaceChildren(...connected.map(device => new Option(device.name || 'MIDI instrument', device.id)))
+  element('midi-input-row').hidden = !connected.length
+  const selected = connected.find(input => input.id === midiInput?.id) ?? connected[0]
+  if (selected) select.value = selected.id
+  void selectMidi(selected)
 }
 
 async function connectMidi(): Promise<void> {
-  if (!navigator.requestMIDIAccess) {
-    element('midi-status').textContent = 'Web MIDI is unavailable in this browser. Touch and computer keys are ready.'
+  if (midiRequestPending) return
+  if (!window.isSecureContext) {
+    setMidiStatus('MIDI requires a secure page. Open Pianoles over HTTPS and try again.')
     return
   }
+  if (!navigator.requestMIDIAccess) {
+    setMidiStatus('This browser does not support Web MIDI. Try Chrome or Edge on a computer.')
+    return
+  }
+
+  void audio.start().catch(() => {})
+  if (midiAccess) {
+    refreshMidi()
+    return
+  }
+  midiRequestPending = true
+  setMidiStatus('Requesting MIDI access. Allow it if your browser asks.')
   try {
-    midiAccess ??= await navigator.requestMIDIAccess()
+    midiAccess = await navigator.requestMIDIAccess({ sysex: false })
     midiAccess.onstatechange = refreshMidi
     refreshMidi()
-    void audio.start().catch(() => {})
-  } catch {
-    element('midi-status').textContent = 'MIDI access failed or was denied. Touch and computer keys are ready.'
+  } catch (error) {
+    if (error instanceof DOMException && ['NotAllowedError', 'SecurityError'].includes(error.name)) {
+      setMidiStatus('MIDI access was blocked. Allow MIDI in this site’s browser permissions, then check again.')
+    } else {
+      setMidiStatus('The browser could not start MIDI. Reconnect your instrument and check again.')
+    }
+  } finally {
+    midiRequestPending = false
+    renderMidiStatus()
   }
+}
+
+function setMidiPanel(open: boolean): void {
+  element('midi-panel').hidden = !open
+  element('midi').setAttribute('aria-expanded', String(open))
 }
 
 function display(): void {
@@ -446,7 +498,14 @@ function display(): void {
       <a class="brand" href="#/" aria-label="Pianoles home"><span class="brand-mark" aria-hidden="true">♩</span>pianoles<span class="brand-dot">.</span></a>
       <div class="header-actions">
         <button type="button" id="catalog" aria-controls="sidebar" aria-expanded="false">Lessons</button>
-        <button type="button" id="midi">Connect MIDI</button>
+        <button type="button" id="midi" aria-controls="midi-panel" aria-expanded="false">Connect MIDI</button>
+        <section id="midi-panel" aria-labelledby="midi-heading" hidden>
+          <div class="midi-panel-head"><h2 id="midi-heading">MIDI devices</h2><button type="button" id="midi-done">Done</button></div>
+          <p id="midi-status" role="status"></p>
+          <div id="midi-input-row" class="midi-input-row" hidden><label for="midi-devices">MIDI input</label><select id="midi-devices"></select></div>
+          <p id="midi-last-note"></p>
+          <button type="button" id="midi-scan">Check again</button>
+        </section>
       </div>
     </header>
     <div class="layout">
@@ -493,7 +552,7 @@ function display(): void {
             <div class="octaves"><button id="octave-down" aria-label="Lower keyboard octave">−</button><span id="octave-label"></span><button id="octave-up" aria-label="Raise keyboard octave">+</button></div>
           </div>
           <div id="key-scroll"><div id="piano"></div></div>
-          <div class="keyboard-foot"><div class="midi-state"><span id="midi-status" aria-live="polite">No MIDI device connected</span><select id="midi-devices" aria-label="MIDI input" hidden></select></div><div id="best"></div></div>
+          <div class="keyboard-foot" id="best"></div>
         </section>
       </main>
     </div>`
@@ -504,6 +563,7 @@ function display(): void {
   makeKeyboard()
   refreshKeys()
   updateSidebar()
+  renderMidiStatus()
   refreshMidi()
   const current = document.querySelector<HTMLElement>('[aria-current="page"]')
   if (current && (current.offsetTop < element('lesson-list').scrollTop || current.offsetTop + current.offsetHeight > element('lesson-list').clientHeight)) {
@@ -522,8 +582,19 @@ function display(): void {
   }
   for (const mode of ['guided', 'timed', 'demo'] as const) element(mode).onclick = () => void start(mode)
   element('stop').onclick = () => { stop(); refreshKeys(); status('Practice stopped.') }
-  element('midi').onclick = () => void connectMidi()
-  element<HTMLSelectElement>('midi-devices').onchange = event => selectMidi((event.target as HTMLSelectElement).value)
+  element('midi').onclick = () => {
+    const open = element('midi-panel').hidden
+    setMidiPanel(open)
+    if (open) void connectMidi()
+  }
+  element('midi-done').onclick = () => {
+    setMidiPanel(false)
+    element('midi').focus()
+  }
+  element('midi-scan').onclick = () => void connectMidi()
+  element<HTMLSelectElement>('midi-devices').onchange = event => {
+    void selectMidi(midiAccess?.inputs.get((event.target as HTMLSelectElement).value))
+  }
   element('octave-down').onclick = () => { keyboardOctave--; updateOctave() }
   element('octave-up').onclick = () => { keyboardOctave++; updateOctave() }
   element('tempo').oninput = () => { element('bpm').textContent = `${settings().bpm} BPM` }
