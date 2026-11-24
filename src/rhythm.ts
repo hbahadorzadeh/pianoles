@@ -140,6 +140,12 @@ export class RhythmDisplay {
   showGuided(hands: Hands, cueBeat: number | undefined, playedBeat?: number): void {
     const beat = playedBeat ?? cueBeat
     if (beat === undefined) return
+    if (playedBeat !== undefined) {
+      for (const event of this.notesAt(hands, playedBeat)) {
+        this.timing.delete(event)
+        this.guidedFills.delete(event)
+      }
+    }
     this.measure(hands, beat)
     const position = beat - this.measureStart
     this.pulse(playedBeat === undefined ? -1 : Math.floor(position))
