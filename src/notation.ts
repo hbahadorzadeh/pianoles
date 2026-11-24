@@ -36,7 +36,7 @@ export function renderScore(container: HTMLElement, lesson: Lesson): void {
     container.append(cell)
 
     const width = 310
-    const height = grand ? 235 : 126
+    const height = grand ? 211 : 126
     const renderer = new Renderer(score, Renderer.Backends.SVG)
     renderer.resize(width, height)
     const context = renderer.getContext()

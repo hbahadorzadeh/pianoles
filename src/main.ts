@@ -15,7 +15,7 @@ const keys = new Map<number, HTMLButtonElement>()
 const noteNames = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B']
 const keyRows = [
   ['z', 's', 'x', 'd', 'c', 'v', 'g', 'b', 'h', 'n', 'j', 'm'],
-  ['q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'i', '9', 'o', '0', 'p'],
+  ['q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'i', '9', 'o', '0', 'p', '['],
 ]
 let lesson: Lesson
 let guided: Step[] | undefined
@@ -25,6 +25,7 @@ let active = false
 let generation = 0
 let animation = 0
 let pitchOffset = 0
+const shortcuts = new Map<string, number>()
 let keyboardOctave = 3
 let highlighted = -1
 let midiAccess: MIDIAccess | undefined
@@ -315,12 +316,21 @@ function makeKeyboard(): void {
 }
 
 function updateOctave(): void {
-  element('octave-label').textContent = `C${keyboardOctave}–E${keyboardOctave + 2}`
+  const firstPitch = 12 * (keyboardOctave + 1)
+  shortcuts.clear()
   keys.forEach(key => delete key.dataset.shortcut)
-  keyRows.forEach((row, index) => row.forEach((shortcut, pitch) => {
-    const key = keys.get(12 * (keyboardOctave + 1 + index) + pitch)
-    if (key) key.dataset.shortcut = shortcut
+  keyRows.forEach((row, index) => row.forEach((shortcut, offset) => {
+    const pitch = firstPitch + index * 12 + offset
+    if (keys.has(pitch)) shortcuts.set(shortcut, pitch)
   }))
+  if (keyboardOctave === 3) {
+    shortcuts.set('a', 43)
+    shortcuts.set('f', 45)
+    shortcuts.set('k', 47)
+  }
+  shortcuts.forEach((pitch, shortcut) => { keys.get(pitch)!.dataset.shortcut = shortcut })
+  const end = keyboardOctave === 2 ? 'F4' : 'F5'
+  element('octave-label').textContent = `${keyboardOctave === 3 ? 'G2' : `C${keyboardOctave}`}–${end}`
   element<HTMLButtonElement>('octave-down').disabled = keyboardOctave === 2
   element<HTMLButtonElement>('octave-up').disabled = keyboardOctave === 4
   const target = keys.get(12 * (keyboardOctave + 1))
@@ -449,7 +459,7 @@ function display(): void {
           </div>
         </section>
         <section class="keyboard" aria-labelledby="keyboard-heading">
-          <div class="keyboard-head"><div><h2 id="keyboard-heading">Piano keyboard</h2><p>Play with touch or use Z and Q keyboard rows.</p></div>
+          <div class="keyboard-head"><div><h2 id="keyboard-heading">Piano keyboard</h2><p>Play with touch or follow the shortcut letters.</p></div>
             <div class="octaves"><button id="octave-down" aria-label="Lower keyboard octave">−</button><span id="octave-label"></span><button id="octave-up" aria-label="Raise keyboard octave">+</button></div>
           </div>
           <div id="key-scroll"><div id="piano"></div></div>
@@ -459,7 +469,7 @@ function display(): void {
     </div>`
 
   element<HTMLSelectElement>('last').value = String(lesson.measures)
-  keyboardOctave = lesson.events.some(event => event.notes.some(note => note.midi < 48)) ? 2 : 3
+  keyboardOctave = 3
   renderScore(element('score'), lesson)
   makeKeyboard()
   refreshKeys()
@@ -514,11 +524,10 @@ window.addEventListener('blur', () => { for (const source of held.keys()) releas
 window.addEventListener('keydown', event => {
   if (event.repeat || event.ctrlKey || event.metaKey || event.altKey ||
       (event.target instanceof HTMLElement && event.target.matches('input,select,textarea,[contenteditable]'))) return
-  const key = event.key.toLowerCase()
-  const row = keyRows.findIndex(keys => keys.includes(key))
-  if (row < 0) return
+  const pitch = shortcuts.get(event.key.toLowerCase())
+  if (pitch === undefined) return
   event.preventDefault()
-  press(`key:${event.code}`, 12 * (keyboardOctave + 1 + row) + keyRows[row].indexOf(key))
+  press(`key:${event.code}`, pitch)
 })
 window.addEventListener('keyup', event => release(`key:${event.code}`))
 display()
