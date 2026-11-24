@@ -8,9 +8,9 @@ meter: 4
 key: Bb
 parts:
   right:
-    - Bb3 C4 D4 Eb4
-    - F4:2 -:2
-    - G4 A4 Bb4 C5
-    - Bb4:2 A4:2
-    - G4 F4 Eb4 D4
-    - C4 Bb3 Bb3:2
+    - Bb3/3 C4/1 D4/2 Eb4/3
+    - F4/4:2 -:2
+    - G4/1 A4/2 Bb4/3 C5/4
+    - Bb4/3:2 A4/2:2
+    - G4/5 F4/4 Eb4/3 D4/2
+    - C4/1 Bb3/3 Bb3/3:2

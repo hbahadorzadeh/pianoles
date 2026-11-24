@@ -8,9 +8,9 @@ meter: 4
 key: Am
 parts:
   right:
-    - A3 B3 C4 D4
-    - E4 F4 G#4 A4
-    - A4 G4 F4 E4
-    - D4 C4 B3 A3
-    - E4 F4 G4 G#4
-    - A4:4
+    - A3/1 B3/2 C4/3 D4/1
+    - E4/2 F4/3 G#4/4 A4/5
+    - A4/5 G4/4 F4/3 E4/2
+    - D4/1 C4/3 B3/2 A3/1
+    - E4/1 F4/2 G4/3 G#4/4
+    - A4/5:4

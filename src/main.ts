@@ -815,7 +815,7 @@ function display(): void {
             ${lesson.id < lessons.length ? `<a href="#/lesson/${lesson.id + 1}" aria-label="Next lesson">→</a>` : '<span aria-hidden="true">→</span>'}
           </nav></div>
           ${lesson.credit ? `<p class="lesson-credit">${escapeText(lesson.credit)}</p>` : ''}
-          <p>${escapeText(lesson.instruction)}</p>
+          <p class="lesson-instruction">${escapeText(lesson.instruction)}</p>
         </section>
         <section class="studio" aria-label="Practice studio">
           <div class="studio-toolbar">

@@ -9,14 +9,14 @@ key: D
 credit: Erik Satie · Gymnopédie No. 1, 1888 · opening accompaniment study
 parts:
   left:
-    - G2 B3+D4+F#4:2
-    - D3 A3+C#4+F#4:2
-    - G2 B3+D4+F#4:2
-    - D3 A3+C#4+F#4:2
-    - G2 B3+D4+F#4:2
-    - D3 A3+C#4+F#4:2
-    - G2 B3+D4+F#4:2
-    - D3 A3+C#4+F#4:2
+    - G2/5 B3/5+D4/3+F#4/1:2
+    - D3/5 A3/5+C#4/3+F#4/1:2
+    - G2/5 B3/5+D4/3+F#4/1:2
+    - D3/5 A3/5+C#4/3+F#4/1:2
+    - G2/5 B3/5+D4/3+F#4/1:2
+    - D3/5 A3/5+C#4/3+F#4/1:2
+    - G2/5 B3/5+D4/3+F#4/1:2
+    - D3/5 A3/5+C#4/3+F#4/1:2
 pedal:
   - measure: 1
     beat: 1

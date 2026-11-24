@@ -9,7 +9,7 @@ Each lesson lives in its own folder, such as `037-echo-steps/lesson.yaml`. The a
 3. After `npm ci`, run `npm test` and `npm run build` from the repository root. Errors identify the file and, for note problems, the hand and measure. Use `npm run dev` and open `/pianoles/#/lesson/<id>` to check notation, playback, and practice.
 
 ```yaml
-id: 87
+id: 89
 unit: More practice
 title: Two simple chords
 instruction: Play each chord together and hold it while the bar fills.
@@ -35,7 +35,7 @@ pedal:
 | Field | What to write |
 | --- | --- |
 | `id`, `unit`, `title` | The stable lesson number, catalog group, and display title. |
-| `instruction` | A short practice goal with concrete guidance. |
+| `instruction` | A short practice goal with concrete guidance. Use a literal block (`|-`) to separate teaching steps across a few paragraphs. |
 | `tempo` | Quarter notes per minute from 35 to 150. |
 | `meter` | Quarter-note beats per measure. Use 2, 3, or 4. |
 | `key` | `C`, `Am`, `G`, `Em`, `D`, `Bm`, `F`, `Dm`, `Bb`, `Gm`, `Eb`, or `Cm`. Spell accidentals in the notes even when they are in the key signature. |

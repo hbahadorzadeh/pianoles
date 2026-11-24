@@ -8,11 +8,11 @@ key: C
 credit: Traditional Anglo-American tune · verse melody
 parts:
   right:
-    - C4 C4 D4 E4
-    - C4 E4 D4 G3
-    - C4 C4 D4 E4
-    - C4:2 B3:2
-    - C4 C4 D4 E4
-    - F4 E4 D4 C4
-    - B3 G3 A3 B3
-    - C4:4
+    - C4/1 C4/1 D4/2 E4/3
+    - C4/1 E4/3 D4/2 G3/1
+    - C4/1 C4/1 D4/2 E4/3
+    - C4/2:2 B3/1:2
+    - C4/1 C4/1 D4/2 E4/3
+    - F4/4 E4/3 D4/2 C4/1
+    - B3/3 G3/1 A3/2 B3/3
+    - C4/1:4

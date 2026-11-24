@@ -1,6 +1,6 @@
 # Pianoles
 
-Pianoles is a browser-based piano course with 86 interactive lessons, from finding middle C to reading and playing two-hand pieces. The app includes standard notation, audio demonstrations, guided and timed practice, and progress saved in the current browser.
+Pianoles is a browser-based piano course with 88 interactive lessons, from finding middle C to reading and playing two-hand pieces. The app includes standard notation, audio demonstrations, guided and timed practice, and progress saved in the current browser.
 
 ## Run locally
 
@@ -22,6 +22,8 @@ The course includes credited arrangements of public-domain tunes and classical e
 
 - Use **Beat & duration** to see how long notes and rests last. The playhead moves during timed practice and demonstrations.
 - Turn on **Kids mode** for large icons, slower demonstrations that lead into guided play, and separate progress. Matching colored fingertips on the hand diagram and keyboard show suggested fingering in lessons that include it.
+
+Lessons 87 and 88 teach treble and bass clef reading. Use the opening landmarks before trying the mixed passages.
 
 ## Contribute a lesson
 

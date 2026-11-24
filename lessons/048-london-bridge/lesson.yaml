@@ -9,11 +9,11 @@ key: C
 credit: Traditional English nursery tune · simplified melody
 parts:
   right:
-    - G4 A4 G4 F4
-    - E4 F4 G4:2
-    - D4 E4 F4:2
-    - E4 F4 G4:2
-    - G4 A4 G4 F4
-    - E4 F4 G4:2
-    - D4:2 G4:2
-    - E4 C4 C4:2
+    - G4/4 A4/5 G4/4 F4/3
+    - E4/2 F4/3 G4/4:2
+    - D4/1 E4/2 F4/3:2
+    - E4/2 F4/3 G4/4:2
+    - G4/4 A4/5 G4/4 F4/3
+    - E4/2 F4/3 G4/4:2
+    - D4/1:2 G4/4:2
+    - E4/3 C4/1 C4/1:2

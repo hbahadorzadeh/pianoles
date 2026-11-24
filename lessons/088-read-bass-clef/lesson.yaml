@@ -1,0 +1,24 @@
+id: 88
+unit: Reading the staff
+title: Read the bass clef
+instruction: |-
+  Find F3 on the line between the bass clef's dots. Middle C (C4) sits on a short ledger line above the bass staff.
+
+  Read from bottom to top. The lines are G2, B2, D3, F3, and A3. The spaces are A2, C3, E3, and G3.
+
+  Play the landmarks first, then read the line and space patterns with your left hand. For the final four measures, use the nearest landmark to name each note before playing.
+tempo: 58
+meter: 4
+key: C
+parts:
+  left:
+    - 'F3:2 C4:2'
+    - 'G2 B2 D3 F3'
+    - 'A3 F3 D3 B2'
+    - 'A2 C3 E3 G3'
+    - 'G3 E3 C3 A2'
+    - 'C4 G3 A3 F3'
+    - 'E3 B2 C3 G2'
+    - 'A3 D3 G3 B2'
+    - 'C3 F3 A2 E3'
+    - 'F3 C3 C4:2'

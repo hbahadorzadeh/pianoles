@@ -19,3 +19,16 @@ test('fingering follows the hand and a change of position', () => {
   const notes = shift.events.filter(event => event.notes[0]?.spelling === 'G4')
   assert.deepEqual(notes.map(event => event.notes[0].finger), [5, 1, 1, 1])
 })
+
+test('lessons 48–86 suggest a finger for every note with a natural chord order', () => {
+  for (const lesson of lessons.slice(47, 86)) {
+    for (const event of lesson.events) {
+      const pitches = [...event.notes].sort((a, b) => a.midi - b.midi)
+      const context = `Lesson ${lesson.id}, ${event.hand} hand, beat ${event.beat}`
+      assert.ok(pitches.every(note => note.finger !== undefined), context)
+      const fingers = pitches.map(note => note.finger!)
+      const ordered = [...new Set(fingers)].sort((a, b) => event.hand === 'right' ? a - b : b - a)
+      assert.deepEqual(fingers, ordered, context)
+    }
+  }
+})

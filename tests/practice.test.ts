@@ -4,7 +4,7 @@ import { lessons } from './catalog'
 import { matchTiming, matchesChord, practiceSteps, releasedEarly, scoreAttempt } from '../src/practice'
 
 test('curriculum contains the expanded course in order and within the playable keyboard', () => {
-  assert.ok(lessons.length >= 86)
+  assert.ok(lessons.length >= 88)
   assert.deepEqual(lessons.map(lesson => lesson.id), Array.from({ length: lessons.length }, (_, i) => i + 1))
   for (const lesson of lessons) {
     for (const hand of lesson.hands) {

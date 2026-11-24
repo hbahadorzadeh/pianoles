@@ -47,3 +47,16 @@ test('the expansion includes credited historical works and pedal studies', () =>
   assert.ok(lessons[74].pedal.length)
   assert.equal(lessons[85].title, 'Chopin Prelude in E Minor · opening study')
 })
+
+test('the reading lessons cover all clef lines, spaces, and middle C in the correct hand', () => {
+  const cases = [
+    { lesson: lessons[86], hand: 'right', title: 'Read the treble clef', pitches: 'C4 E4 F4 G4 A4 B4 C5 D5 E5 F5' },
+    { lesson: lessons[87], hand: 'left', title: 'Read the bass clef', pitches: 'G2 A2 B2 C3 D3 E3 F3 G3 A3 C4' },
+  ]
+  for (const { lesson, hand, title, pitches } of cases) {
+    assert.equal(lesson.title, title)
+    assert.deepEqual(lesson.hands, [hand])
+    const written = new Set(lesson.events.flatMap(event => event.notes.map(note => note.spelling)))
+    for (const pitch of pitches.split(' ')) assert.ok(written.has(pitch), `${title} includes ${pitch}`)
+  }
+})
